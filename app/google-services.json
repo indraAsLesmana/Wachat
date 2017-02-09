@@ -1,0 +1,97 @@
+{
+  "project_info": {
+    "project_number": "729452584544",
+    "firebase_url": "https://quakereport-cde47.firebaseio.com",
+    "project_id": "quakereport-cde47",
+    "storage_bucket": "quakereport-cde47.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:729452584544:android:9f77137abfef293d",
+        "android_client_info": {
+          "package_name": "com.example.android.quakereport"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "729452584544-2lu2774o495dpi53imar8ihk278d3kbg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJNsNnmDdD_3eycgz5I5PhB7WNSeWuvXE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "729452584544-2lu2774o495dpi53imar8ihk278d3kbg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "729452584544-v4if5jteggicqt6e5hb3l6ha7omufdc0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.rifqi.FirebaseChatExample"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:729452584544:android:968066670a0dcdd3",
+        "android_client_info": {
+          "package_name": "com.example.indraaguslesmana.wachat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "729452584544-2lu2774o495dpi53imar8ihk278d3kbg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJNsNnmDdD_3eycgz5I5PhB7WNSeWuvXE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "729452584544-2lu2774o495dpi53imar8ihk278d3kbg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "729452584544-v4if5jteggicqt6e5hb3l6ha7omufdc0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.rifqi.FirebaseChatExample"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
