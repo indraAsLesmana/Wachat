@@ -34,11 +34,16 @@ import android.widget.Toast;
 
 import com.example.indraaguslesmana.wachat.R;
 import com.example.indraaguslesmana.wachat.Utility.Helpers;
+import com.example.indraaguslesmana.wachat.Utility.PreferenceUtils;
 import com.example.indraaguslesmana.wachat.WaChat;
+import com.example.indraaguslesmana.wachat.model.UserContact;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +57,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private final String TAG = LoginActivity.class.getSimpleName();
     private FirebaseAuth mAuth;
-
+    private DatabaseReference mDbReferenceUser;
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -428,8 +433,44 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         if (!task.isSuccessful()) {
                             Toast.makeText(LoginActivity.this, getString(R.string.auth_failed),
                                     Toast.LENGTH_SHORT).show();
+                            return;
                         }
+
+                        FirebaseUser user = mAuth.getCurrentUser(); //getUserProfile
+
+                        if (user != null){
+                            String userMail = user.getEmail();
+                            String userName = user.getDisplayName();
+                            String userId = user.getUid();
+
+
+                            UserContact userContact = new UserContact(userMail, 0, userName, userId);
+                            PreferenceUtils.setUserSession(userContact);
+
+                            // TODO : kirim profile user ke firebase, error karena ini email biasa.
+                            mDbReferenceUser.child(userId).setValue(userContact,
+                                    new DatabaseReference.CompletionListener() {
+                                        @Override
+                                        public void onComplete(DatabaseError databaseError,
+                                                               DatabaseReference databaseReference) {
+
+                                            if (databaseError != null){
+                                                Toast.makeText(LoginActivity.this, databaseError.toString(),
+                                                        Toast.LENGTH_SHORT).show();
+                                                return;
+                                            }
+                                        }
+                                    });
+
+                                    Helpers.hideProgressDialog();
+
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
+                        }
+
                         Helpers.hideProgressDialog();
+                        finish();
+
                         // [END_EXCLUDE]
                     }
                 });
