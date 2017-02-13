@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 /**
  * Created by indraaguslesmana on 2/8/17.
@@ -68,6 +69,8 @@ public class WaChat extends Application {
 
                 if (user != null) {
                     // User is signed in
+                    String token = FirebaseInstanceId.getInstance().getToken();
+
                     String userMail = user.getEmail();
                     String userName = "new User1";
                     String userId = user.getUid();

@@ -25,7 +25,6 @@ public class PreferenceUtils {
         SharedPreferences.Editor editor = WaChat.sPreferences.edit();
         editor.putString(PREFERENCE_USER_MAIL, userContact.getEmail());
         editor.putString(PREFERENCE_USER_NAME, userContact.getName());
-        editor.putLong(PREFERENCE_LAST_SEEN, userContact.getLastSeen());
         editor.putString(PREFERENCE_USER_ID, userContact.getUid());
         editor.commit();
     }
@@ -35,7 +34,6 @@ public class PreferenceUtils {
         editor.remove(PREFERENCE_USER_MAIL);
         editor.remove(PREFERENCE_USER_NAME);
         editor.remove(PREFERENCE_USER_ID);
-        editor.remove(PREFERENCE_USER_TOKEN);
         editor.commit();
     }
 
