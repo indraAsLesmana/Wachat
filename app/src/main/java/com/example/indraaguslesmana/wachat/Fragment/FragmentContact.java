@@ -49,6 +49,8 @@ public class FragmentContact extends Fragment {
                                 contact.add(userContact.getName());
                             Log.d(TAG, "onDataChange: name" + userContact.getName());
                         }
+                        
+                        userContactArrayAdapter.notifyDataSetChanged();
                     }
 
                     @Override
@@ -63,11 +65,9 @@ public class FragmentContact extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_listview, container, false);
+        userContactArrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_user_item, contact);
+
         listView = (ListView) rootView.findViewById(R.id.list_user);
-
-        userContactArrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.fragment_listview,
-                R.id.user_item, contact);
-
         listView.setAdapter(userContactArrayAdapter);
 
         return rootView;
