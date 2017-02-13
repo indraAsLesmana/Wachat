@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.example.indraaguslesmana.wachat.WaChat;
+import com.example.indraaguslesmana.wachat.model.Fcm;
 import com.example.indraaguslesmana.wachat.model.UserContact;
 
 /**
@@ -20,6 +21,18 @@ public class PreferenceUtils {
     private static final String PREFERENCE_USER_TOKEN ="user-token";
     private static final String PREFERENCE_DEFAULT = "null";
 
+
+    public static void setUserFcm (Fcm fcm){
+        SharedPreferences.Editor editor = WaChat.sPreferences.edit();
+        editor.putString(PREFERENCE_USER_TOKEN, fcm.getToken());
+        editor.commit();
+    }
+
+    public static void destroyUserFcm (){
+        SharedPreferences.Editor editor = WaChat.sPreferences.edit();
+        editor.remove(PREFERENCE_USER_TOKEN);
+        editor.commit();
+    }
 
     public static void setUserSession(UserContact userContact) {
         SharedPreferences.Editor editor = WaChat.sPreferences.edit();
