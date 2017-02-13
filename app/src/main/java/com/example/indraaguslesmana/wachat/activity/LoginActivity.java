@@ -56,13 +56,10 @@ import static android.Manifest.permission.READ_CONTACTS;
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
     private final String TAG = LoginActivity.class.getSimpleName();
-    private FirebaseAuth mAuth;
+    private static FirebaseAuth mAuth;
     private DatabaseReference mDbReferenceUser;
 
-    // [START declare_auth_listener]
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    // [END declare_auth_listener]
-    /**
+      /**
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
@@ -117,66 +114,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser(); //getUserProfile
-                Log.d(TAG, "onAuthStateChanged: " + user.toString());
-
-                if (user != null) {
-                    // User is signed in
-                    String userMail = user.getEmail();
-                    String userName = "new User1";
-                    String userId = user.getUid();
-
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-
-                    UserContact userContact = new UserContact(userMail, 0, userName, userId);
-                        PreferenceUtils.setUserSession(userContact);
-
-                        mDbReferenceUser.child(userId).setValue(userContact,
-                                new DatabaseReference.CompletionListener() {
-                                    @Override
-                                    public void onComplete(DatabaseError databaseError,
-                                                           DatabaseReference databaseReference) {
-
-                                        if (databaseError != null){
-                                            Toast.makeText(LoginActivity.this, databaseError.toString(),
-                                                    Toast.LENGTH_SHORT).show();
-                                            return;
-                                        }
-                                    }
-                                });
-
-                        Helpers.hideProgressDialog();
-
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
-
-                } else {
-                    // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                }
-                // [START_EXCLUDE]
-                // TODO : redirect to home screen
-               // updateUI(user);
-                // [END_EXCLUDE]
-            }
-        };
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+        mAuth.addAuthStateListener(WaChat.mAuthListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
+        if (WaChat.mAuthListener != null) {
+            mAuth.removeAuthStateListener(WaChat.mAuthListener);
         }
     }
 

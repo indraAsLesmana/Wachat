@@ -1,13 +1,21 @@
 package com.example.indraaguslesmana.wachat;
 
 import android.app.Application;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.indraaguslesmana.wachat.Utility.Constant;
+import com.example.indraaguslesmana.wachat.Utility.Helpers;
+import com.example.indraaguslesmana.wachat.Utility.PreferenceUtils;
+import com.example.indraaguslesmana.wachat.activity.LoginActivity;
+import com.example.indraaguslesmana.wachat.activity.MainActivity;
+import com.example.indraaguslesmana.wachat.model.UserContact;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -32,7 +40,7 @@ public class WaChat extends Application {
     private static DatabaseReference mDatabaseReferenceGLOBALMESSAGES;
 
     // [START declare_auth_listener]
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    public static FirebaseAuth.AuthStateListener mAuthListener;
     // [END declare_auth_listener]
 
     @Override
@@ -52,6 +60,53 @@ public class WaChat extends Application {
                 mFirebaseDatabase.getReference().child(Constant.KEY_GLOBALMESSAGES);
 
         Log.d(TAG, "onCreate: " + mDatabaseReferenceUSER.toString());
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser(); //getUserProfile
+
+                if (user != null) {
+                    // User is signed in
+                    String userMail = user.getEmail();
+                    String userName = "new User1";
+                    String userId = user.getUid();
+
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+
+                    UserContact userContact = new UserContact(userMail, 0, userName, userId);
+                    PreferenceUtils.setUserSession(userContact);
+
+                    mDatabaseReferenceUSER.child(userId).setValue(userContact,
+                            new DatabaseReference.CompletionListener() {
+                                @Override
+                                public void onComplete(DatabaseError databaseError,
+                                                       DatabaseReference databaseReference) {
+
+                                    if (databaseError != null){
+                                        Toast.makeText(WaChat.this, databaseError.toString(),
+                                                Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                }
+                            });
+
+                    Helpers.hideProgressDialog();
+
+                    Intent intent = new Intent(WaChat.this, MainActivity.class);
+                    startActivity(intent);
+
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+                // [START_EXCLUDE]
+                // TODO : redirect to home screen
+                // updateUI(user);
+                // [END_EXCLUDE]
+
+            }
+        };
 
     }
 
@@ -77,5 +132,9 @@ public class WaChat extends Application {
 
     public static DatabaseReference getmDatabaseReferenceGLOBALMESSAGES() {
         return mDatabaseReferenceGLOBALMESSAGES;
+    }
+
+    public FirebaseAuth.AuthStateListener getmAuthListener() {
+        return mAuthListener;
     }
 }
