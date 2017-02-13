@@ -51,27 +51,8 @@ public class WaChat extends Application {
         mDatabaseReferenceGLOBALMESSAGES =
                 mFirebaseDatabase.getReference().child(Constant.KEY_GLOBALMESSAGES);
 
+        Log.d(TAG, "onCreate: " + mDatabaseReferenceUSER.toString());
 
-
-
-        // [START auth_state_listener]
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    // User is signed in
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                } else {
-                    // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                }
-                // [START_EXCLUDE]
-//                updateUI(user);
-                // [END_EXCLUDE]
-            }
-        };
-        // [END auth_state_listener]
     }
 
     public static FirebaseAuth getsAuth() {

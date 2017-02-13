@@ -58,6 +58,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private final String TAG = LoginActivity.class.getSimpleName();
     private FirebaseAuth mAuth;
     private DatabaseReference mDbReferenceUser;
+
+    // [START declare_auth_listener]
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    // [END declare_auth_listener]
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -70,10 +74,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private static final String[] DUMMY_CREDENTIALS = new String[]{
             "foo@example.com:hello", "bar@example.com:world"
     };
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
+
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -87,6 +88,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         setContentView(R.layout.activity_login);
         //initial firebase Auth
         mAuth = WaChat.getsAuth();
+        mDbReferenceUser = WaChat.getmDatabaseReferenceUSER();
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -114,6 +116,68 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser(); //getUserProfile
+                Log.d(TAG, "onAuthStateChanged: " + user.toString());
+
+                if (user != null) {
+                    // User is signed in
+                    String userMail = user.getEmail();
+                    String userName = "new User1";
+                    String userId = user.getUid();
+
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+
+                    UserContact userContact = new UserContact(userMail, 0, userName, userId);
+                        PreferenceUtils.setUserSession(userContact);
+
+                        mDbReferenceUser.child(userId).setValue(userContact,
+                                new DatabaseReference.CompletionListener() {
+                                    @Override
+                                    public void onComplete(DatabaseError databaseError,
+                                                           DatabaseReference databaseReference) {
+
+                                        if (databaseError != null){
+                                            Toast.makeText(LoginActivity.this, databaseError.toString(),
+                                                    Toast.LENGTH_SHORT).show();
+                                            return;
+                                        }
+                                    }
+                                });
+
+                        Helpers.hideProgressDialog();
+
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+                // [START_EXCLUDE]
+                // TODO : redirect to home screen
+               // updateUI(user);
+                // [END_EXCLUDE]
+            }
+        };
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 
     private void populateAutoComplete() {
@@ -166,9 +230,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
 
         // Reset errors.
         mEmailView.setError(null);
@@ -313,98 +374,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         int IS_PRIMARY = 1;
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String mEmail;
-        private final String mPassword;
-
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                finish();
-
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
-    }
-
-    private void createAccount(String email, String password) {
-        Log.d(TAG, "createAccount:" + email);
-        if (!validateForm()) {
-            return;
-        }
-
-        Helpers.showProgressDialog(this);
-
-        // [START create_user_with_email]
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
-
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-                        if (!task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, R.string.auth_failed,
-                                    Toast.LENGTH_SHORT).show();
-                        }
-
-                        // [START_EXCLUDE]
-                        Helpers.hideProgressDialog();
-                        // [END_EXCLUDE]
-                    }
-                });
-        // [END create_user_with_email]
-    }
-
     private void signIn(String email, String password) {
         Log.d(TAG, "signIn:" + email);
         if (!validateForm()) {
@@ -433,45 +402,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         if (!task.isSuccessful()) {
                             Toast.makeText(LoginActivity.this, getString(R.string.auth_failed),
                                     Toast.LENGTH_SHORT).show();
-                            return;
                         }
-
-                        FirebaseUser user = mAuth.getCurrentUser(); //getUserProfile
-
-                        if (user != null){
-                            String userMail = user.getEmail();
-                            String userName = user.getDisplayName();
-                            String userId = user.getUid();
-
-
-                            UserContact userContact = new UserContact(userMail, 0, userName, userId);
-                            PreferenceUtils.setUserSession(userContact);
-
-                            // TODO : kirim profile user ke firebase, error karena ini email biasa.
-                            mDbReferenceUser.child(userId).setValue(userContact,
-                                    new DatabaseReference.CompletionListener() {
-                                        @Override
-                                        public void onComplete(DatabaseError databaseError,
-                                                               DatabaseReference databaseReference) {
-
-                                            if (databaseError != null){
-                                                Toast.makeText(LoginActivity.this, databaseError.toString(),
-                                                        Toast.LENGTH_SHORT).show();
-                                                return;
-                                            }
-                                        }
-                                    });
-
-                                    Helpers.hideProgressDialog();
-
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
-                        }
-
                         Helpers.hideProgressDialog();
-                        finish();
 
-                        // [END_EXCLUDE]
                     }
                 });
         // [END sign_in_with_email]
