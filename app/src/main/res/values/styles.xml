@@ -24,6 +24,15 @@
         <item name="tabSelectedTextColor">@color/icons</item> <!--change text color if selected-->
     </style>
 
+    <style name="text_itemstyle_medium">
+        <item name="android:textAppearance">?android:textAppearanceSmall</item> <!-- fix with this-->
+        <!-- <item name="android:textSize">?android:textAppearanceMedium</item>--> <!--this make error infalating-->
+        <item name="android:textColor">@color/secondary_text</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
     <!--make font not Caps for tablyout-->
     <style name="MyCustomTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="textAllCaps">false</item>

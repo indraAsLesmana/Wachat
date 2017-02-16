@@ -56,15 +56,14 @@ public class FragmentContact extends Fragment {
                                 PreferenceUtils.PREFERENCE_USER_ID);
 
                         // check, to remove self id
-                        if (contacList.containsKey(userId)) {
-                            contacList.remove(userId);
-                        }
-
                         if (contacList != null) {
+                            if (contacList.containsKey(userId)){
+                                contacList.remove(userId);
+                            }
                             contact.addAll(contacList.values());
+                            userContactArrayAdapter.notifyDataSetChanged();
                         }
 
-                        userContactArrayAdapter.notifyDataSetChanged();
                     }
 
                     @Override
@@ -76,7 +75,9 @@ public class FragmentContact extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_listview, container, false);
         userContactArrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_user_item, contact);

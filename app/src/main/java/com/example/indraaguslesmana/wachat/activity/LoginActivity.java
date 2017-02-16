@@ -330,7 +330,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             return;
         }
 
-        Helpers.showProgressDialog(this);
+//        Helpers.showProgressDialog(this);
 
         // [START sign_in_with_email]
         mAuth.signInWithEmailAndPassword(email, password)
@@ -353,7 +353,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             Toast.makeText(LoginActivity.this, getString(R.string.auth_failed),
                                     Toast.LENGTH_SHORT).show();
                         }
-                        Helpers.hideProgressDialog();
+//                        Helpers.hideProgressDialog();
 
                     }
                 });
