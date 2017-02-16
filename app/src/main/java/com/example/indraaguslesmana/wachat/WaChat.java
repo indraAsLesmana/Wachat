@@ -3,6 +3,7 @@ package com.example.indraaguslesmana.wachat;
 import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -12,6 +13,7 @@ import com.example.indraaguslesmana.wachat.Utility.Helpers;
 import com.example.indraaguslesmana.wachat.Utility.PreferenceUtils;
 import com.example.indraaguslesmana.wachat.activity.LoginActivity;
 import com.example.indraaguslesmana.wachat.activity.MainActivity;
+import com.example.indraaguslesmana.wachat.model.Fcm;
 import com.example.indraaguslesmana.wachat.model.UserContact;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -78,8 +80,10 @@ public class WaChat extends Application {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
 
                     UserContact userContact = new UserContact(userMail, 0, userName, userId);
+                    Fcm userFcm = new Fcm(Boolean.TRUE.toString(), token);
                     PreferenceUtils.setUserSession(userContact);
 
+                    //set users data
                     mDatabaseReferenceUSER.child(userId).setValue(userContact,
                             new DatabaseReference.CompletionListener() {
                                 @Override
@@ -93,15 +97,18 @@ public class WaChat extends Application {
                                     }
                                 }
                             });
+                    //set fcm data
+                    mDatabaseReferenceFCM.child(userId).setValue(userFcm);
 
                     Helpers.hideProgressDialog();
 
                     Intent intent = new Intent(WaChat.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
 
                 } else {
                     // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                    Log.d(TAG, "onAuthStateChanged:signed_out tea");
                 }
                 // [START_EXCLUDE]
                 // TODO : redirect to home screen

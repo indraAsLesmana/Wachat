@@ -1,23 +1,32 @@
 package com.example.indraaguslesmana.wachat.activity;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.indraaguslesmana.wachat.R;
+import com.example.indraaguslesmana.wachat.Utility.Constant;
+import com.example.indraaguslesmana.wachat.Utility.Helpers;
 import com.example.indraaguslesmana.wachat.Utility.PreferenceUtils;
 import com.example.indraaguslesmana.wachat.WaChat;
 import com.example.indraaguslesmana.wachat.adapter.SimpleFragmentPagerAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     private DatabaseReference dbRefrenceUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,17 +54,53 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id){
+        switch (id) {
             case R.id.action_logout:
-                WaChat.getsAuth().signOut();
-                PreferenceUtils.destroyUserSession();
-
-                Intent intent = new Intent(this, LoginActivity.class);
-                startActivity(intent);
-                finish();
+                logOut();
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    private void logOut() {
+        Helpers.showProgressDialog(this);
+
+        String uidKey = PreferenceUtils.
+                getSinglePrefrence(this, PreferenceUtils.PREFERENCE_USER_ID);
+        WaChat.getmDatabaseReferenceUSER().child(uidKey)
+                .child(Constant.KEY_LASTSEEN).setValue(ServerValue.TIMESTAMP)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            PreferenceUtils.destroyUserSession();
+                            WaChat.getsAuth().signOut();
+                            Helpers.hideProgressDialog();
+
+                        }else {
+                            Helpers.hideProgressDialog();
+                        }
+                    }
+                });
+
+        WaChat.getmDatabaseReferenceFCM().child(uidKey)
+                .child(Constant.KEY_ENABLED).setValue(Boolean.FALSE.toString())
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()){
+
+                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }
+                });
+
+        Log.d(TAG, "onOptionsItemSelected: " + uidKey + " " +
+                Constant.KEY_LASTSEEN.toString());
+
+    }
+
 }

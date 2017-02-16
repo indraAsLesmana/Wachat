@@ -5,20 +5,23 @@ package com.example.indraaguslesmana.wachat.model;
  */
 
 public class Fcm {
-    private String Enbled;
+    private String enabled;
     private String token;
 
-    public Fcm(String enbled, String token) {
-        Enbled = enbled;
+    public Fcm() {
+    }
+
+    public Fcm(String enabled, String token) {
+        this.enabled = enabled;
         this.token = token;
     }
 
-    public String getEnbled() {
-        return Enbled;
+    public String getEnabled() {
+        return enabled;
     }
 
-    public void setEnbled(String enbled) {
-        Enbled = enbled;
+    public void setEnabled(String enabled) {
+        this.enabled = enabled;
     }
 
     public String getToken() {
@@ -28,5 +31,4 @@ public class Fcm {
     public void setToken(String token) {
         this.token = token;
     }
-
 }

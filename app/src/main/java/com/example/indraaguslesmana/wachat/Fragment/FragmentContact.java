@@ -12,6 +12,7 @@ import android.widget.ListView;
 
 import com.example.indraaguslesmana.wachat.R;
 import com.example.indraaguslesmana.wachat.Utility.Constant;
+import com.example.indraaguslesmana.wachat.Utility.PreferenceUtils;
 import com.example.indraaguslesmana.wachat.WaChat;
 import com.example.indraaguslesmana.wachat.model.UserContact;
 import com.google.firebase.database.DataSnapshot;
@@ -49,7 +50,8 @@ public class FragmentContact extends Fragment {
                                 contact.add(userContact.getName());
                             Log.d(TAG, "onDataChange: name" + userContact.getName());
                         }
-                        
+
+//                        if (contact.contains(PreferenceUtils.getSinglePrefrence(getActivity(), )))
                         userContactArrayAdapter.notifyDataSetChanged();
                     }
 

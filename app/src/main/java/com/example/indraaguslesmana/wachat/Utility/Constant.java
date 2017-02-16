@@ -11,4 +11,6 @@ public class Constant {
     public static final String KEY_FCM = "fcm";
     public static final String KEY_CHAT = "chat";
     public static final String KEY_GLOBALMESSAGES = "globalmessages";
+    public static final String KEY_LASTSEEN = "lastSeen";
+    public static final String KEY_ENABLED = "enabled";
 }
