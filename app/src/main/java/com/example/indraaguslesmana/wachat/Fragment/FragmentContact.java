@@ -21,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -32,6 +33,8 @@ public class FragmentContact extends Fragment {
     private ListView listView;
     private ArrayAdapter<String> userContactArrayAdapter;
     private ArrayList<String> contact;
+    private HashMap<String, String> contacList = new HashMap<>();
+
     private FirebaseDatabase firebaseDatabase;
 
 
@@ -47,11 +50,20 @@ public class FragmentContact extends Fragment {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                                 UserContact userContact = snapshot.getValue(UserContact.class);
-                                contact.add(userContact.getName());
-                            Log.d(TAG, "onDataChange: name" + userContact.getName());
+                                contacList.put(userContact.getUid(), userContact.getName());
+                        }
+                        String userId = PreferenceUtils.getSinglePrefrence(getActivity(),
+                                PreferenceUtils.PREFERENCE_USER_ID);
+
+                        // check, to remove self id
+                        if (contacList.containsKey(userId)) {
+                            contacList.remove(userId);
                         }
 
-//                        if (contact.contains(PreferenceUtils.getSinglePrefrence(getActivity(), )))
+                        if (contacList != null) {
+                            contact.addAll(contacList.values());
+                        }
+
                         userContactArrayAdapter.notifyDataSetChanged();
                     }
 
