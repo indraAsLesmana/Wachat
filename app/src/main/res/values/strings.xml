@@ -20,5 +20,6 @@
     <string name="loading">Loading...</string>
     <string name="auth_failed">Authentication Failed</string>
     <string name="logout">Logout</string>
+    <string name="chat">Chat</string>
 
 </resources>

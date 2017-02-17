@@ -58,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_logout:
                 logOut();
                 break;
+            case R.id.action_chat:
+                Intent intent = new Intent(this, ChatActivity.class);
+                startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
