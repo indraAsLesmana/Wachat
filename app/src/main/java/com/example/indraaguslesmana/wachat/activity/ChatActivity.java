@@ -58,23 +58,34 @@ public class ChatActivity extends AppCompatActivity {
         mEditMessage.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                   //nothing
+                //nothing
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                firebaseDatabase.getReference().child(uid)
-                        .child(CHAT_TARGET_FORCE)
-                        .child(Constant.KEY_TYPING)
-                        .setValue(Boolean.TRUE.toString());
+
             }
 
             @Override
             public void afterTextChanged(Editable s) {
+                Log.d(TAG, "afterTextChanged: exetution count : 1");
+
                 firebaseDatabase.getReference().child(uid)
                         .child(CHAT_TARGET_FORCE)
                         .child(Constant.KEY_TYPING)
-                        .setValue(Boolean.FALSE.toString());
+                        .setValue(Boolean.TRUE.toString());
+
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        firebaseDatabase.getReference().child(uid)
+                                .child(CHAT_TARGET_FORCE)
+                                .child(Constant.KEY_TYPING)
+                                .setValue(Boolean.FALSE.toString());
+                    }
+                }, 5000);
+
             }
         });
 
