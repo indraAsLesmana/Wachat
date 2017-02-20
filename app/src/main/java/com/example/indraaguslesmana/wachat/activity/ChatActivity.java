@@ -70,7 +70,9 @@ public class ChatActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 Log.d(TAG, "afterTextChanged: exetution count : 1");
 
-                firebaseDatabase.getReference().child(uid)
+                firebaseDatabase.getReference()
+                        .child(Constant.KEY_CHAT)
+                        .child(uid)
                         .child(CHAT_TARGET_FORCE)
                         .child(Constant.KEY_TYPING)
                         .setValue(Boolean.TRUE.toString());
@@ -79,7 +81,9 @@ public class ChatActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        firebaseDatabase.getReference().child(uid)
+                        firebaseDatabase.getReference()
+                                .child(Constant.KEY_CHAT)
+                                .child(uid)
                                 .child(CHAT_TARGET_FORCE)
                                 .child(Constant.KEY_TYPING)
                                 .setValue(Boolean.FALSE.toString());
@@ -112,7 +116,9 @@ public class ChatActivity extends AppCompatActivity {
         Log.d(TAG, "sendChat: time" + messages_detail.getTimeStamp());
 
         //send chat from sender
-        firebaseDatabase.getReference().child(uid)
+        firebaseDatabase.getReference()
+                .child(Constant.KEY_CHAT)
+                .child(uid)
                 .child(CHAT_TARGET_FORCE)
                 .child(Constant.KEY_MESSAGE)
                 .push()
@@ -130,7 +136,9 @@ public class ChatActivity extends AppCompatActivity {
         messages_detail.setDestination(uid);
         messages_detail.setSender(CHAT_TARGET_FORCE);
 
-        firebaseDatabase.getReference().child(CHAT_TARGET_FORCE)
+        firebaseDatabase.getReference()
+                .child(Constant.KEY_CHAT)
+                .child(CHAT_TARGET_FORCE)
                 .child(uid)
                 .child(Constant.KEY_MESSAGE)
                 .push()
