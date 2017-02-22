@@ -59,8 +59,10 @@ public class MainActivity extends AppCompatActivity {
                 logOut();
                 break;
             case R.id.action_chat:
-                Intent intent = new Intent(this, ChatActivity.class);
-                startActivity(intent);
+             /*   Intent intent = new Intent(this, ChatActivity.class);
+                startActivity(intent);*/
+                Toast.makeText(this, "disable...", Toast.LENGTH_SHORT).show();
+                break;
         }
 
         return super.onOptionsItemSelected(item);

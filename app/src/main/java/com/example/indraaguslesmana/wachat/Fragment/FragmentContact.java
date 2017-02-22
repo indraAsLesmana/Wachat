@@ -1,5 +1,6 @@
 package com.example.indraaguslesmana.wachat.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import com.example.indraaguslesmana.wachat.R;
 import com.example.indraaguslesmana.wachat.Utility.Constant;
 import com.example.indraaguslesmana.wachat.Utility.PreferenceUtils;
 import com.example.indraaguslesmana.wachat.WaChat;
+import com.example.indraaguslesmana.wachat.activity.ChatActivity;
 import com.example.indraaguslesmana.wachat.model.UserContact;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,6 +37,7 @@ public class FragmentContact extends Fragment {
     private ListView listView;
     private ArrayAdapter<String> userContactArrayAdapter;
     private ArrayList<String> contact;
+    private ArrayList<String> idlist;
     private HashMap<String, String> contacList = new HashMap<>();
 
     private FirebaseDatabase firebaseDatabase;
@@ -44,6 +47,7 @@ public class FragmentContact extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         contact = new ArrayList<>();
+        idlist = new ArrayList<>();
 
         firebaseDatabase = WaChat.getmFirebaseDatabase();
         firebaseDatabase.getReference().child(Constant.KEY_USER)
@@ -64,7 +68,8 @@ public class FragmentContact extends Fragment {
                             }
 
                             for (String key : contacList.keySet()){
-                                contact.add(key +","+ contacList.get(key));
+                                contact.add(contacList.get(key));
+                                idlist.add(key);
                             }
                             userContactArrayAdapter.notifyDataSetChanged();
                         }
@@ -85,6 +90,7 @@ public class FragmentContact extends Fragment {
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_listview, container, false);
+
         userContactArrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_user_item, contact);
 
         listView = (ListView) rootView.findViewById(R.id.list_user);
@@ -93,9 +99,14 @@ public class FragmentContact extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String userTargetId = idlist.get(position);
+                Toast.makeText(getActivity(), userTargetId, Toast.LENGTH_SHORT).show();
 
-                Toast.makeText(getContext(), " "+ String.valueOf(position), Toast.LENGTH_SHORT).show();
-
+                Intent intent = new Intent(getActivity(), ChatActivity.class);
+                intent.putExtra(Constant.KEY_USER, userTargetId);
+                if (!userTargetId.equals("")){
+                    startActivity(intent);
+                }
             }
         });
 

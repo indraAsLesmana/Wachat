@@ -75,9 +75,15 @@ public class WaChat extends Application {
 
                     String userMail = user.getEmail();
                     String userName = user.getDisplayName();
+
+                    if (userName == null || userName.isEmpty()){
+                        userName = userMail;
+                    }
                     String userId = user.getUid();
 
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getDisplayName());
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + userName);
 
                     UserContact userContact = new UserContact(userMail, 0, userName, userId);
                     Fcm userFcm = new Fcm(Boolean.TRUE.toString(), token);

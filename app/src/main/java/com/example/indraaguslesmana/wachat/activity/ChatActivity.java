@@ -33,7 +33,7 @@ import java.util.Map;
 
 public class ChatActivity extends AppCompatActivity {
     private static final String TAG = "ChatActivity";
-    private final static String CHAT_TARGET_FORCE = "Otbwh0xaopSBGn40021CAD1BuDk2";
+//    private final String userTargetChat = "Otbwh0xaopSBGn40021CAD1BuDk2";
 
     private static final String TIME_STAMP = "timeStamp";
 
@@ -50,13 +50,16 @@ public class ChatActivity extends AppCompatActivity {
     private FirebaseDatabase firebaseDatabase;
     private ChildEventListener mChilEventListener;
     private DatabaseReference mDatabasePreference;
-
+    
+    private String userTargetChat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-
+        
+        userTargetChat = getIntent().getStringExtra(Constant.KEY_USER);
+        
         mSendMessage = (ImageButton) findViewById(R.id.send_chat);
         mTakeGaleri = (ImageButton) findViewById(R.id.imageSelect);
         mEditMessage = (EditText) findViewById(R.id.ed_chat);
@@ -71,7 +74,7 @@ public class ChatActivity extends AppCompatActivity {
         firebaseDatabase = WaChat.getmFirebaseDatabase();
         mDatabasePreference = WaChat.getmDatabaseReferenceCHAT()
                 .child(uid)
-                .child(CHAT_TARGET_FORCE)
+                .child(userTargetChat)
                 .child(Constant.KEY_MESSAGE);
 
 
@@ -123,7 +126,7 @@ public class ChatActivity extends AppCompatActivity {
                 /*firebaseDatabase.getReference()
                         .child(Constant.KEY_CHAT)
                         .child(uid)
-                        .child(CHAT_TARGET_FORCE)
+                        .child(userTargetChat)
                         .child(Constant.KEY_TYPING)
                         .setValue(Boolean.TRUE.toString());
 
@@ -134,7 +137,7 @@ public class ChatActivity extends AppCompatActivity {
                         firebaseDatabase.getReference()
                                 .child(Constant.KEY_CHAT)
                                 .child(uid)
-                                .child(CHAT_TARGET_FORCE)
+                                .child(userTargetChat)
                                 .child(Constant.KEY_TYPING)
                                 .setValue(Boolean.FALSE.toString());
                     }
@@ -155,7 +158,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void sendChat() {
         DatabaseReference rootPref =
-                WaChat.getmDatabaseReferenceCHAT().child(uid).child(CHAT_TARGET_FORCE);
+                WaChat.getmDatabaseReferenceCHAT().child(uid).child(userTargetChat);
 
 
         rootPref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -171,7 +174,7 @@ public class ChatActivity extends AppCompatActivity {
                     firebaseDatabase.getReference()
                             .child(Constant.KEY_CHAT)
                             .child(uid)
-                            .child(CHAT_TARGET_FORCE)
+                            .child(userTargetChat)
                             .setValue(userDetail);
                 }
 
@@ -185,7 +188,7 @@ public class ChatActivity extends AppCompatActivity {
                 firebaseDatabase.getReference()
                         .child(Constant.KEY_CHAT)
                         .child(uid)
-                        .child(CHAT_TARGET_FORCE)
+                        .child(userTargetChat)
                         .child(Constant.KEY_MESSAGE)
                         .push()
                         .setValue(chatmodel);
@@ -200,7 +203,7 @@ public class ChatActivity extends AppCompatActivity {
         //---- duplicate
 
         DatabaseReference rootPref2 =
-                WaChat.getmDatabaseReferenceCHAT().child(CHAT_TARGET_FORCE).child(uid);
+                WaChat.getmDatabaseReferenceCHAT().child(userTargetChat).child(uid);
 
 
         rootPref2.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -209,13 +212,13 @@ public class ChatActivity extends AppCompatActivity {
                 if (!dataSnapshot.hasChild(Constant.KEY_NAME)){
 
                     UserContact.UserDetail userDetail = new UserContact.UserDetail();
-                    userDetail.setUid(CHAT_TARGET_FORCE);
+                    userDetail.setUid(userTargetChat);
                     userDetail.setName(name);
 
                     //send data detail senderId and SenderName
                     firebaseDatabase.getReference()
                             .child(Constant.KEY_CHAT)
-                            .child(CHAT_TARGET_FORCE)
+                            .child(userTargetChat)
                             .child(uid)
                             .setValue(userDetail);
                 }
@@ -229,7 +232,7 @@ public class ChatActivity extends AppCompatActivity {
 
                 firebaseDatabase.getReference()
                         .child(Constant.KEY_CHAT)
-                        .child(CHAT_TARGET_FORCE)
+                        .child(userTargetChat)
                         .child(uid)
                         .child(Constant.KEY_MESSAGE)
                         .push()
