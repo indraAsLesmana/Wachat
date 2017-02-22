@@ -15,5 +15,7 @@ public class Constant {
     public static final String KEY_ENABLED = "enabled";
     public static final String KEY_MESSAGE = "messages";
 
+    public static final String KEY_NAME = "name";
+
     public static final String KEY_TYPING = "typing";
 }

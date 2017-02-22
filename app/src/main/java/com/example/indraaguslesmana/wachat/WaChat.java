@@ -74,7 +74,7 @@ public class WaChat extends Application {
                     String token = FirebaseInstanceId.getInstance().getToken();
 
                     String userMail = user.getEmail();
-                    String userName = "new User1";
+                    String userName = user.getDisplayName();
                     String userId = user.getUid();
 
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());

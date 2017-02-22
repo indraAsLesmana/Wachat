@@ -51,4 +51,5 @@ public class Messages_Detail {
     public void setTimeStamp(Object timeStamp) {
         this.timeStamp = timeStamp;
     }
+
 }

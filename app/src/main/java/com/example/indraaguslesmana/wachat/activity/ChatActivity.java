@@ -1,7 +1,5 @@
 package com.example.indraaguslesmana.wachat.activity;
 
-import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,22 +8,27 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.ListView;
 
 import com.example.indraaguslesmana.wachat.R;
 import com.example.indraaguslesmana.wachat.Utility.Constant;
 import com.example.indraaguslesmana.wachat.Utility.PreferenceUtils;
 import com.example.indraaguslesmana.wachat.WaChat;
+import com.example.indraaguslesmana.wachat.adapter.ChatAdapter;
 import com.example.indraaguslesmana.wachat.model.Messages_Detail;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
+import com.example.indraaguslesmana.wachat.model.Chat_model;
+import com.example.indraaguslesmana.wachat.model.UserContact;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
-import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ChatActivity extends AppCompatActivity {
@@ -34,14 +37,20 @@ public class ChatActivity extends AppCompatActivity {
 
     private static final String TIME_STAMP = "timeStamp";
 
+    private ChatAdapter mChatAdapter;
     private ImageButton mSendMessage;
     private ImageButton mTakeGaleri;
     private EditText mEditMessage;
+    private ListView mListChat;
     String uid = PreferenceUtils.getSinglePrefrence(this, PreferenceUtils.PREFERENCE_USER_ID);
+    String name = PreferenceUtils.getSinglePrefrence(this, PreferenceUtils.PREFERENCE_USER_NAME);
     Messages_Detail messages_detail = new Messages_Detail();
 
     //firebase
     private FirebaseDatabase firebaseDatabase;
+    private ChildEventListener mChilEventListener;
+    private DatabaseReference mDatabasePreference;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +60,50 @@ public class ChatActivity extends AppCompatActivity {
         mSendMessage = (ImageButton) findViewById(R.id.send_chat);
         mTakeGaleri = (ImageButton) findViewById(R.id.imageSelect);
         mEditMessage = (EditText) findViewById(R.id.ed_chat);
+        mListChat = (ListView) findViewById(R.id.list_chat);
+
+        List<Chat_model> chatModels = new ArrayList<>();
+        mChatAdapter = new ChatAdapter(this, R.layout.message_item, chatModels);
+        mListChat.setAdapter(mChatAdapter);
+
 
         //firebase initialize
         firebaseDatabase = WaChat.getmFirebaseDatabase();
+        mDatabasePreference = WaChat.getmDatabaseReferenceCHAT()
+                .child(uid)
+                .child(CHAT_TARGET_FORCE)
+                .child(Constant.KEY_MESSAGE);
+
+
+        mChilEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Chat_model chatmodel = dataSnapshot.getValue(Chat_model.class);
+                mChatAdapter.add(chatmodel);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        };
+        mDatabasePreference.addChildEventListener(mChilEventListener);
 
         mEditMessage.addTextChangedListener(new TextWatcher() {
             @Override
@@ -70,7 +120,7 @@ public class ChatActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 Log.d(TAG, "afterTextChanged: exetution count : 1");
 
-                firebaseDatabase.getReference()
+                /*firebaseDatabase.getReference()
                         .child(Constant.KEY_CHAT)
                         .child(uid)
                         .child(CHAT_TARGET_FORCE)
@@ -88,11 +138,10 @@ public class ChatActivity extends AppCompatActivity {
                                 .child(Constant.KEY_TYPING)
                                 .setValue(Boolean.FALSE.toString());
                     }
-                }, 5000);
+                }, 5000);*/
 
             }
         });
-
 
         mSendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,51 +154,94 @@ public class ChatActivity extends AppCompatActivity {
 
 
     private void sendChat() {
+        DatabaseReference rootPref =
+                WaChat.getmDatabaseReferenceCHAT().child(uid).child(CHAT_TARGET_FORCE);
 
-        messages_detail.setDestination(CHAT_TARGET_FORCE);
-        messages_detail.setMessage(mEditMessage.getText().toString());
-        messages_detail.setSender(uid);
-        //get server time
-        Map<String, Object> time = new HashMap<>();
-        time.put(TIME_STAMP, ServerValue.TIMESTAMP);
-        messages_detail.setTimeStamp(time.get(TIME_STAMP));
-        Log.d(TAG, "sendChat: time" + messages_detail.getTimeStamp());
 
-        //send chat from sender
-        firebaseDatabase.getReference()
-                .child(Constant.KEY_CHAT)
-                .child(uid)
-                .child(CHAT_TARGET_FORCE)
-                .child(Constant.KEY_MESSAGE)
-                .push()
-                .setValue(messages_detail)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (!task.isSuccessful()) {
-                            Toast.makeText(ChatActivity.this, "send chat failed", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+        rootPref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.hasChild(Constant.KEY_NAME)){
 
-        //make duplicate and change, sender and receiver target
-        messages_detail.setDestination(uid);
-        messages_detail.setSender(CHAT_TARGET_FORCE);
+                    UserContact.UserDetail userDetail = new UserContact.UserDetail();
+                    userDetail.setUid(uid);
+                    userDetail.setName(name);
 
-        firebaseDatabase.getReference()
-                .child(Constant.KEY_CHAT)
-                .child(CHAT_TARGET_FORCE)
-                .child(uid)
-                .child(Constant.KEY_MESSAGE)
-                .push()
-                .setValue(messages_detail)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (!task.isSuccessful()) {
-                            Toast.makeText(ChatActivity.this, "sender view failed", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+                    //send data detail senderId and SenderName
+                    firebaseDatabase.getReference()
+                            .child(Constant.KEY_CHAT)
+                            .child(uid)
+                            .child(CHAT_TARGET_FORCE)
+                            .setValue(userDetail);
+                }
+
+                Chat_model chatmodel = new Chat_model();
+                chatmodel.setmMessages(mEditMessage.getText().toString());
+
+                Map<String, Object> time = new HashMap<>();
+                time.put(TIME_STAMP, ServerValue.TIMESTAMP);
+                chatmodel.setmTimeStamp(time.get(TIME_STAMP));
+
+                firebaseDatabase.getReference()
+                        .child(Constant.KEY_CHAT)
+                        .child(uid)
+                        .child(CHAT_TARGET_FORCE)
+                        .child(Constant.KEY_MESSAGE)
+                        .push()
+                        .setValue(chatmodel);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        //---- duplicate
+
+        DatabaseReference rootPref2 =
+                WaChat.getmDatabaseReferenceCHAT().child(CHAT_TARGET_FORCE).child(uid);
+
+
+        rootPref2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.hasChild(Constant.KEY_NAME)){
+
+                    UserContact.UserDetail userDetail = new UserContact.UserDetail();
+                    userDetail.setUid(CHAT_TARGET_FORCE);
+                    userDetail.setName(name);
+
+                    //send data detail senderId and SenderName
+                    firebaseDatabase.getReference()
+                            .child(Constant.KEY_CHAT)
+                            .child(CHAT_TARGET_FORCE)
+                            .child(uid)
+                            .setValue(userDetail);
+                }
+
+                Chat_model chatmodel = new Chat_model();
+                chatmodel.setmMessages(mEditMessage.getText().toString());
+
+                Map<String, Object> time = new HashMap<>();
+                time.put(TIME_STAMP, ServerValue.TIMESTAMP);
+                chatmodel.setmTimeStamp(time.get(TIME_STAMP));
+
+                firebaseDatabase.getReference()
+                        .child(Constant.KEY_CHAT)
+                        .child(CHAT_TARGET_FORCE)
+                        .child(uid)
+                        .child(Constant.KEY_MESSAGE)
+                        .push()
+                        .setValue(chatmodel);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 }

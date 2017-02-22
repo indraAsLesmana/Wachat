@@ -72,7 +72,7 @@ public class FragmentChat extends Fragment {
                         }*/
 
                         // TODO must be add correctyly to ...
-                        if (listUid != null) {
+                        /*if (listUid != null) {
                             Log.d(TAG, "onDataChange: " + listUid.toString());
                             for (String targetUser : listUid){
                                 String name = getUserNameById(targetUser);
@@ -80,7 +80,7 @@ public class FragmentChat extends Fragment {
                             }
                             chatArrayList.addAll(nameResult);
                             chatArrayAdapter.notifyDataSetChanged();
-                        }
+                        }*/
                     }
 
                     @Override
