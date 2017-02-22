@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void logOut() {
-        Helpers.showProgressDialog(this);
+//        Helpers.showProgressDialog(this);
 
         String uidKey = PreferenceUtils.
                 getSinglePrefrence(this, PreferenceUtils.PREFERENCE_USER_ID);

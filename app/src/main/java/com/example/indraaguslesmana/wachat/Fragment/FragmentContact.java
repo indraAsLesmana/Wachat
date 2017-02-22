@@ -100,11 +100,10 @@ public class FragmentContact extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String userTargetId = idlist.get(position);
-                Toast.makeText(getActivity(), userTargetId, Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(getActivity(), ChatActivity.class);
                 intent.putExtra(Constant.KEY_USER, userTargetId);
-                if (!userTargetId.equals("")){
+                if (userTargetId != null || !userTargetId.isEmpty()){
                     startActivity(intent);
                 }
             }
