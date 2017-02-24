@@ -66,6 +66,10 @@ public class PreferenceUtils {
                 result = dataPreferece.getString(PREFERENCE_USER_ID, PREFERENCE_DEFAULT);
                 Log.d(TAG, "getSinglePrefrence: " + result);
                 break;
+            case PREFERENCE_USER_NAME:
+                result = dataPreferece.getString(PREFERENCE_USER_NAME, PREFERENCE_DEFAULT);
+                Log.d(TAG, "getSinglePrefrence: " + result);
+                break;
         }
 
         return result;

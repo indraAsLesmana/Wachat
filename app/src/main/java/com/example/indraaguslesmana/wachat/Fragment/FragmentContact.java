@@ -101,9 +101,13 @@ public class FragmentContact extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String userTargetId = idlist.get(position);
 
+                UserContact.UserDetail userTargetChat =
+                        new UserContact.UserDetail(idlist.get(position), contact.get(position));
+
                 Intent intent = new Intent(getActivity(), ChatActivity.class);
-                intent.putExtra(Constant.KEY_USER, userTargetId);
-                if (userTargetId != null || !userTargetId.isEmpty()){
+                intent.putExtra(Constant.KEY_USER, userTargetChat);
+
+                if (userTargetChat != null){
                     startActivity(intent);
                 }
             }

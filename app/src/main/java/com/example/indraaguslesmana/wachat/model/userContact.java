@@ -1,5 +1,7 @@
 package com.example.indraaguslesmana.wachat.model;
 
+import java.io.Serializable;
+
 /**
  * Created by indraaguslesmana on 2/10/17.
  */
@@ -17,6 +19,11 @@ public class UserContact {
     public UserContact(String email, long lastSeen, String name, String uid) {
         this.email = email;
         this.lastSeen = lastSeen;
+        this.name = name;
+        this.uid = uid;
+    }
+
+    public UserContact(String name, String uid) {
         this.name = name;
         this.uid = uid;
     }
@@ -53,7 +60,7 @@ public class UserContact {
         this.uid = uid;
     }
 
-    public static class UserDetail{
+    public static class UserDetail implements Serializable{
         private String uid;
         private String name;
 

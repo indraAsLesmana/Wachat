@@ -1,5 +1,7 @@
 package com.example.indraaguslesmana.wachat.activity;
 
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.indraaguslesmana.wachat.R;
 import com.example.indraaguslesmana.wachat.Utility.Constant;
@@ -18,6 +21,8 @@ import com.example.indraaguslesmana.wachat.adapter.ChatAdapter;
 import com.example.indraaguslesmana.wachat.model.Messages_Detail;
 import com.example.indraaguslesmana.wachat.model.Chat_model;
 import com.example.indraaguslesmana.wachat.model.UserContact;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -51,15 +56,29 @@ public class ChatActivity extends AppCompatActivity {
     private ChildEventListener mChilEventListener;
     private DatabaseReference mDatabasePreference;
     
-    private String userTargetChat;
+    private UserContact.UserDetail userTargetChat;
+    private String targetUId;
+    private String targetName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        
-        userTargetChat = getIntent().getStringExtra(Constant.KEY_USER);
-        
+
+        /*UserContact userTarget = getIntent().get(Constant.KEY_USER);
+
+        if (userTarget != null || !userTarget.isEmpty()){
+            userTargetChat = userTarget;
+        }*/
+
+        Intent i = getIntent();
+        if (i != null) {
+            userTargetChat = (UserContact.UserDetail) i.getSerializableExtra(Constant.KEY_USER);
+            targetUId = userTargetChat.getUid();
+            targetName = userTargetChat.getName();
+
+        }
+
         mSendMessage = (ImageButton) findViewById(R.id.send_chat);
         mTakeGaleri = (ImageButton) findViewById(R.id.imageSelect);
         mEditMessage = (EditText) findViewById(R.id.ed_chat);
@@ -69,12 +88,13 @@ public class ChatActivity extends AppCompatActivity {
         mChatAdapter = new ChatAdapter(this, R.layout.message_item, chatModels);
         mListChat.setAdapter(mChatAdapter);
 
-
+        Log.d(TAG, "onCreate: targetUid" + targetUId);
+        Log.d(TAG, "onCreate: targetName" + targetName);
         //firebase initialize
         firebaseDatabase = WaChat.getmFirebaseDatabase();
         mDatabasePreference = WaChat.getmDatabaseReferenceCHAT()
                 .child(uid)
-                .child(userTargetChat)
+                .child(targetUId)
                 .child(Constant.KEY_MESSAGE);
 
 
@@ -158,7 +178,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void sendChat() {
         DatabaseReference rootPref =
-                WaChat.getmDatabaseReferenceCHAT().child(uid).child(userTargetChat);
+                WaChat.getmDatabaseReferenceCHAT().child(uid).child(userTargetChat.getUid());
 
 
         rootPref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -166,16 +186,12 @@ public class ChatActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.hasChild(Constant.KEY_NAME)){
 
-                    UserContact.UserDetail userDetail = new UserContact.UserDetail();
-                    userDetail.setUid(uid);
-                    userDetail.setName(name);
-
                     //send data detail senderId and SenderName
                     firebaseDatabase.getReference()
                             .child(Constant.KEY_CHAT)
                             .child(uid)
-                            .child(userTargetChat)
-                            .setValue(userDetail);
+                            .child(targetUId)
+                            .setValue(userTargetChat);
                 }
 
                 Chat_model chatmodel = new Chat_model();
@@ -188,7 +204,7 @@ public class ChatActivity extends AppCompatActivity {
                 firebaseDatabase.getReference()
                         .child(Constant.KEY_CHAT)
                         .child(uid)
-                        .child(userTargetChat)
+                        .child(targetUId)
                         .child(Constant.KEY_MESSAGE)
                         .push()
                         .setValue(chatmodel);
@@ -203,7 +219,7 @@ public class ChatActivity extends AppCompatActivity {
         //---- duplicate
 
         DatabaseReference rootPref2 =
-                WaChat.getmDatabaseReferenceCHAT().child(userTargetChat).child(uid);
+                WaChat.getmDatabaseReferenceCHAT().child(userTargetChat.getUid()).child(uid);
 
 
         rootPref2.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -212,13 +228,13 @@ public class ChatActivity extends AppCompatActivity {
                 if (!dataSnapshot.hasChild(Constant.KEY_NAME)){
 
                     UserContact.UserDetail userDetail = new UserContact.UserDetail();
-                    userDetail.setUid(userTargetChat);
+                    userDetail.setUid(uid);
                     userDetail.setName(name);
 
                     //send data detail senderId and SenderName
                     firebaseDatabase.getReference()
                             .child(Constant.KEY_CHAT)
-                            .child(userTargetChat)
+                            .child(targetUId)
                             .child(uid)
                             .setValue(userDetail);
                 }
@@ -232,11 +248,20 @@ public class ChatActivity extends AppCompatActivity {
 
                 firebaseDatabase.getReference()
                         .child(Constant.KEY_CHAT)
-                        .child(userTargetChat)
+                        .child(targetUId)
                         .child(uid)
                         .child(Constant.KEY_MESSAGE)
                         .push()
-                        .setValue(chatmodel);
+                        .setValue(chatmodel)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (!task.isSuccessful()){
+                                    //clear text
+                                    Toast.makeText(ChatActivity.this, "message unsend", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
             }
 
             @Override
