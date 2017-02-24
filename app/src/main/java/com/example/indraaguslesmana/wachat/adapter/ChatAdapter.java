@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.indraaguslesmana.wachat.R;
-import com.example.indraaguslesmana.wachat.Utility.PreferenceUtils;
+import com.example.indraaguslesmana.wachat.Utility.Helpers;
 import com.example.indraaguslesmana.wachat.model.Chat_model;
 
 import java.util.List;
@@ -35,7 +35,7 @@ public class ChatAdapter extends ArrayAdapter<Chat_model> {
         }
         ImageView photoImageView = (ImageView) convertView.findViewById(R.id.photoImageView);
         TextView messageTextView = (TextView) convertView.findViewById(R.id.messageTextView);
-        TextView authorTextView = (TextView) convertView.findViewById(R.id.nameTextView);
+        TextView timeStampTextView = (TextView) convertView.findViewById(R.id.nameTextView);
 
         Chat_model message = getItem(position);
 
@@ -52,8 +52,8 @@ public class ChatAdapter extends ArrayAdapter<Chat_model> {
             messageTextView.setText(message.getmMessages());
         }
 
-        authorTextView.setText(PreferenceUtils.getSinglePrefrence(getContext(),
-                PreferenceUtils.PREFERENCE_USER_NAME));
+        long time = Long.valueOf(message.getmTimeStamp().toString());
+        timeStampTextView.setText(Helpers.convertUnixTime(time));
 
         return convertView;
     }
