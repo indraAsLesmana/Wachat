@@ -3,7 +3,6 @@ package com.example.indraaguslesmana.wachat;
 import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -11,7 +10,6 @@ import android.widget.Toast;
 import com.example.indraaguslesmana.wachat.Utility.Constant;
 import com.example.indraaguslesmana.wachat.Utility.Helpers;
 import com.example.indraaguslesmana.wachat.Utility.PreferenceUtils;
-import com.example.indraaguslesmana.wachat.activity.LoginActivity;
 import com.example.indraaguslesmana.wachat.activity.MainActivity;
 import com.example.indraaguslesmana.wachat.model.Fcm;
 import com.example.indraaguslesmana.wachat.model.UserContact;
@@ -41,6 +39,8 @@ public class WaChat extends Application {
     private static DatabaseReference mDatabaseReferenceCHAT;
     private static DatabaseReference mDatabaseReferenceFCM;
     private static DatabaseReference mDatabaseReferenceGLOBALMESSAGES;
+    public static final String STRUCKTUR_VERSION = "v1";
+
 
     // [START declare_auth_listener]
     public static FirebaseAuth.AuthStateListener mAuthListener;
@@ -53,14 +53,16 @@ public class WaChat extends Application {
         // [START initialize_auth]
         sAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
+
+
         mDatabaseReferenceUSER =
-                mFirebaseDatabase.getReference().child(Constant.KEY_USER);
+                mFirebaseDatabase.getReference().child(STRUCKTUR_VERSION).child(Constant.KEY_USER);
         mDatabaseReferenceCHAT =
-                mFirebaseDatabase.getReference().child(Constant.KEY_CHAT);
+                mFirebaseDatabase.getReference().child(STRUCKTUR_VERSION).child(Constant.KEY_CHAT);
         mDatabaseReferenceFCM =
-                mFirebaseDatabase.getReference().child(Constant.KEY_FCM);
+                mFirebaseDatabase.getReference().child(STRUCKTUR_VERSION).child(Constant.KEY_FCM);
         mDatabaseReferenceGLOBALMESSAGES =
-                mFirebaseDatabase.getReference().child(Constant.KEY_GLOBALMESSAGES);
+                mFirebaseDatabase.getReference().child(STRUCKTUR_VERSION).child(Constant.KEY_GLOBALMESSAGES);
 
         Log.d(TAG, "onCreate: " + mDatabaseReferenceUSER.toString());
 

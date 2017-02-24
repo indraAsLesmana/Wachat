@@ -50,7 +50,9 @@ public class FragmentContact extends Fragment {
         idlist = new ArrayList<>();
 
         firebaseDatabase = WaChat.getmFirebaseDatabase();
-        firebaseDatabase.getReference().child(Constant.KEY_USER)
+        firebaseDatabase.getReference()
+                .child(WaChat.STRUCKTUR_VERSION)
+                .child(Constant.KEY_USER)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {

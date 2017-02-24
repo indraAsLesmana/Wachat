@@ -2,7 +2,6 @@ package com.example.indraaguslesmana.wachat.activity;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -40,7 +39,6 @@ import java.util.Map;
 
 public class ChatActivity extends AppCompatActivity {
     private static final String TAG = "ChatActivity";
-//    private final String userTargetChat = "Otbwh0xaopSBGn40021CAD1BuDk2";
 
     private static final String TIME_STAMP = "timeStamp";
 
@@ -83,7 +81,7 @@ public class ChatActivity extends AppCompatActivity {
         mListChat = (ListView) findViewById(R.id.list_chat);
 
         List<Chat_model> chatModels = new ArrayList<>();
-        mChatAdapter = new ChatAdapter(this, R.layout.message_item, chatModels);
+        mChatAdapter = new ChatAdapter(this, R.layout.message_item_layout, chatModels);
         mListChat.setAdapter(mChatAdapter);
 
         //firebase initialize
@@ -199,6 +197,7 @@ public class ChatActivity extends AppCompatActivity {
 
                     //send data detail senderId and SenderName
                     firebaseDatabase.getReference()
+                            .child(WaChat.STRUCKTUR_VERSION)
                             .child(Constant.KEY_CHAT)
                             .child(uid)
                             .child(targetUId)
@@ -211,8 +210,10 @@ public class ChatActivity extends AppCompatActivity {
                 Map<String, Object> time = new HashMap<>();
                 time.put(TIME_STAMP, ServerValue.TIMESTAMP);
                 chatmodel.setmTimeStamp(time.get(TIME_STAMP));
+                chatmodel.setSenderId(uid);
 
                 firebaseDatabase.getReference()
+                        .child(WaChat.STRUCKTUR_VERSION)
                         .child(Constant.KEY_CHAT)
                         .child(uid)
                         .child(targetUId)
@@ -244,6 +245,7 @@ public class ChatActivity extends AppCompatActivity {
 
                     //send data detail senderId and SenderName
                     firebaseDatabase.getReference()
+                            .child(WaChat.STRUCKTUR_VERSION)
                             .child(Constant.KEY_CHAT)
                             .child(targetUId)
                             .child(uid)
@@ -256,8 +258,10 @@ public class ChatActivity extends AppCompatActivity {
                 Map<String, Object> time = new HashMap<>();
                 time.put(TIME_STAMP, ServerValue.TIMESTAMP);
                 chatmodel.setmTimeStamp(time.get(TIME_STAMP));
+                chatmodel.setSenderId(uid);
 
                 firebaseDatabase.getReference()
+                        .child(WaChat.STRUCKTUR_VERSION)
                         .child(Constant.KEY_CHAT)
                         .child(targetUId)
                         .child(uid)
