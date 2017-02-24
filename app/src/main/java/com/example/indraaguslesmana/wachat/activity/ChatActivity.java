@@ -2,11 +2,13 @@ package com.example.indraaguslesmana.wachat.activity;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -65,19 +67,15 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        /*UserContact userTarget = getIntent().get(Constant.KEY_USER);
-
-        if (userTarget != null || !userTarget.isEmpty()){
-            userTargetChat = userTarget;
-        }*/
-
         Intent i = getIntent();
         if (i != null) {
             userTargetChat = (UserContact.UserDetail) i.getSerializableExtra(Constant.KEY_USER);
             targetUId = userTargetChat.getUid();
             targetName = userTargetChat.getName();
-
         }
+
+        //Change Action Bar title with Name, if private chat
+        setTitle(targetName);
 
         mSendMessage = (ImageButton) findViewById(R.id.send_chat);
         mTakeGaleri = (ImageButton) findViewById(R.id.imageSelect);
@@ -88,14 +86,13 @@ public class ChatActivity extends AppCompatActivity {
         mChatAdapter = new ChatAdapter(this, R.layout.message_item, chatModels);
         mListChat.setAdapter(mChatAdapter);
 
-        Log.d(TAG, "onCreate: targetUid" + targetUId);
-        Log.d(TAG, "onCreate: targetName" + targetName);
         //firebase initialize
         firebaseDatabase = WaChat.getmFirebaseDatabase();
         mDatabasePreference = WaChat.getmDatabaseReferenceCHAT()
                 .child(uid)
                 .child(targetUId)
                 .child(Constant.KEY_MESSAGE);
+
 
 
         mChilEventListener = new ChildEventListener() {
@@ -173,6 +170,20 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int actionClick  = item.getItemId();
+
+        switch (actionClick){
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 
