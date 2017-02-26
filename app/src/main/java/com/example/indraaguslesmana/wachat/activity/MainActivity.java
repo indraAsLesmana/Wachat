@@ -25,7 +25,6 @@ import com.google.firebase.database.ServerValue;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private DatabaseReference dbRefrenceUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +58,7 @@ public class MainActivity extends AppCompatActivity {
                 logOut();
                 break;
             case R.id.action_chat:
-             /*   Intent intent = new Intent(this, ChatActivity.class);
-                startActivity(intent);*/
+
                 Toast.makeText(this, "disable...", Toast.LENGTH_SHORT).show();
                 break;
         }

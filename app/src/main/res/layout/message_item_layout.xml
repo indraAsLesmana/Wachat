@@ -15,15 +15,15 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/photoImageView_receiver"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:layout_marginRight="5dp"
-                android:layout_marginTop="0dp"
-                android:src="@drawable/user_pratikshya"
-                android:visibility="gone" />
+            <TextView
+                android:id="@+id/time_stamp_sender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:padding="2dp"
+                android:textSize="12sp"
+                android:visibility="visible"
+                tools:text="17:55" />
 
             <TextView
                 android:id="@+id/message_text"
@@ -36,7 +36,42 @@
                 android:layout_height="40dp"
                 android:layout_gravity="center"
                 android:layout_marginLeft="5dp"
-                android:src="@drawable/user_pacific" />
+                android:src="@drawable/user_pacific"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_receiver"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layout_sender"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/photoImageView_receiver"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="0dp"
+                android:src="@drawable/user_pratikshya"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/message_text_2"
+                style="@style/chat_view_receiver"
+                tools:text="Android charting application xml ui design tutorial with example. Android charting application xml ui design tutorial with example. Android charting application xml ui design tutorial with example. Android charting application xml ui design tutorial with example." />
+
+            <TextView
+                android:id="@+id/time_stamp_receiver"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:padding="2dp"
+                android:textSize="12sp"
+                android:visibility="visible"
+                tools:text="17:55" />
 
         </LinearLayout>
 

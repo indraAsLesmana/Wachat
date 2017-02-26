@@ -136,7 +136,6 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                Log.d(TAG, "afterTextChanged: exetution count : 1");
 
                 /*firebaseDatabase.getReference()
                         .child(Constant.KEY_CHAT)

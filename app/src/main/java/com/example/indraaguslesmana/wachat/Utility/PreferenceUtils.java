@@ -60,15 +60,12 @@ public class PreferenceUtils {
         switch (prefereceName){
             case PREFERENCE_USER_TOKEN:
                 result = dataPreferece.getString(PREFERENCE_USER_TOKEN, PREFERENCE_DEFAULT);
-                Log.d(TAG, "getSinglePrefrence: " + result);
                 break;
             case PREFERENCE_USER_ID:
                 result = dataPreferece.getString(PREFERENCE_USER_ID, PREFERENCE_DEFAULT);
-                Log.d(TAG, "getSinglePrefrence: " + result);
                 break;
             case PREFERENCE_USER_NAME:
                 result = dataPreferece.getString(PREFERENCE_USER_NAME, PREFERENCE_DEFAULT);
-                Log.d(TAG, "getSinglePrefrence: " + result);
                 break;
         }
 

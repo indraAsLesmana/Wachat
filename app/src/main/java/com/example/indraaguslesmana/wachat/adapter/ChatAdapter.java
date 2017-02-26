@@ -8,10 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.indraaguslesmana.wachat.R;
+import com.example.indraaguslesmana.wachat.Utility.Helpers;
 import com.example.indraaguslesmana.wachat.Utility.PreferenceUtils;
 import com.example.indraaguslesmana.wachat.model.Chat_model;
 
@@ -34,38 +36,44 @@ public class ChatAdapter extends ArrayAdapter<Chat_model> {
             convertView = ((Activity) getContext()).
                     getLayoutInflater().inflate(R.layout.message_item_layout, parent, false);
         }
-        ImageView photoImageView = (ImageView) convertView.findViewById(R.id.photoImageView);
 
-        TextView messageTextView_sender = (TextView) convertView.findViewById(R.id.message_text);
-//        ImageView arrow_image_sender = (ImageView) convertView.findViewById(R.id.arrow_message_sender);
-//        ImageView arrow_image_receiver = (ImageView) convertView.findViewById(R.id.arrow_message_receiver);
-        ImageView photoImageView_sender = (ImageView) convertView.findViewById(R.id.photoImageView_sender);
-        ImageView photoImageView_receiver = (ImageView) convertView.findViewById(R.id.photoImageView_receiver);
+        LinearLayout senderLayout = (LinearLayout) convertView.findViewById(R.id.layout_sender);
+        LinearLayout receiverLayout = (LinearLayout) convertView.findViewById(R.id.layout_receiver);
 
-//        TextView messageTextView_receiver = (TextView) convertView.findViewById(R.id.textView_receiver);
-//        TextView timeStampTextView = (TextView) convertView.findViewById(R.id.nameTextView);
 
         Chat_model message = getItem(position);
+        long time = Long.valueOf(message.getmTimeStamp().toString());
 
         boolean isPhoto = message.getmPhotoUrl() != null;
 
         if (message.getSenderId().equals(PreferenceUtils.getSinglePrefrence(getContext(),
                 PreferenceUtils.PREFERENCE_USER_ID))){
-            photoImageView_receiver.setVisibility(View.GONE);
-//            arrow_image_receiver.setVisibility(View.GONE);
+            //setLayout
+            senderLayout.setVisibility(View.VISIBLE);
+            receiverLayout.setVisibility(View.GONE);
+
+            TextView messageTextView_sender = (TextView) convertView.findViewById(R.id.message_text);
+            ImageView photoImageView_sender = (ImageView) convertView.findViewById(R.id.photoImageView_sender);
+            TextView timeStampTextView = (TextView) convertView.findViewById(R.id.time_stamp_sender);
 
             photoImageView_sender.setVisibility(View.VISIBLE);
-//            arrow_image_sender.setVisibility(View.VISIBLE);
             messageTextView_sender.setText(message.getmMessages());
+
+            timeStampTextView.setText(Helpers.convertUnixTime(time));
 
         }else {
+            //setLayout
+            senderLayout.setVisibility(View.GONE);
+            receiverLayout.setVisibility(View.VISIBLE);
+
+            TextView messageTextView_receiver = (TextView) convertView.findViewById(R.id.message_text_2);
+            ImageView photoImageView_receiver = (ImageView) convertView.findViewById(R.id.photoImageView_receiver);
+            TextView timeStampTextView = (TextView) convertView.findViewById(R.id.time_stamp_receiver);
 
             photoImageView_receiver.setVisibility(View.VISIBLE);
-//            arrow_image_receiver.setVisibility(View.VISIBLE);
+            messageTextView_receiver.setText(message.getmMessages());
 
-            photoImageView_sender.setVisibility(View.GONE);
-//            arrow_image_sender.setVisibility(View.GONE);
-            messageTextView_sender.setText(message.getmMessages());
+            timeStampTextView.setText(Helpers.convertUnixTime(time));
 
         }
 
