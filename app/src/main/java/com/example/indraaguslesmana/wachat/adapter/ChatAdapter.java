@@ -3,6 +3,7 @@ package com.example.indraaguslesmana.wachat.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -36,8 +37,8 @@ public class ChatAdapter extends ArrayAdapter<Chat_model> {
         ImageView photoImageView = (ImageView) convertView.findViewById(R.id.photoImageView);
 
         TextView messageTextView_sender = (TextView) convertView.findViewById(R.id.message_text);
-        ImageView arrow_image_sender = (ImageView) convertView.findViewById(R.id.arrow_message_sender);
-        ImageView arrow_image_receiver = (ImageView) convertView.findViewById(R.id.arrow_message_receiver);
+//        ImageView arrow_image_sender = (ImageView) convertView.findViewById(R.id.arrow_message_sender);
+//        ImageView arrow_image_receiver = (ImageView) convertView.findViewById(R.id.arrow_message_receiver);
         ImageView photoImageView_sender = (ImageView) convertView.findViewById(R.id.photoImageView_sender);
         ImageView photoImageView_receiver = (ImageView) convertView.findViewById(R.id.photoImageView_receiver);
 
@@ -51,19 +52,19 @@ public class ChatAdapter extends ArrayAdapter<Chat_model> {
         if (message.getSenderId().equals(PreferenceUtils.getSinglePrefrence(getContext(),
                 PreferenceUtils.PREFERENCE_USER_ID))){
             photoImageView_receiver.setVisibility(View.GONE);
-            arrow_image_receiver.setVisibility(View.GONE);
+//            arrow_image_receiver.setVisibility(View.GONE);
 
             photoImageView_sender.setVisibility(View.VISIBLE);
-            arrow_image_sender.setVisibility(View.VISIBLE);
+//            arrow_image_sender.setVisibility(View.VISIBLE);
             messageTextView_sender.setText(message.getmMessages());
 
         }else {
 
             photoImageView_receiver.setVisibility(View.VISIBLE);
-            arrow_image_receiver.setVisibility(View.VISIBLE);
+//            arrow_image_receiver.setVisibility(View.VISIBLE);
 
             photoImageView_sender.setVisibility(View.GONE);
-            arrow_image_sender.setVisibility(View.GONE);
+//            arrow_image_sender.setVisibility(View.GONE);
             messageTextView_sender.setText(message.getmMessages());
 
         }

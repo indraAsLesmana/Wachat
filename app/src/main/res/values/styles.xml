@@ -55,4 +55,24 @@
         <item name="android:maxLines">1</item>
     </style>
 
+    <style name="chat_view_sender">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:layout_weight">2</item>
+        <item name="android:background">@drawable/rounded_corner</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:textColor">#000</item>
+    </style>
+
+    <style name="chat_view_receiver">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:layout_weight">2</item>
+        <item name="android:background">@drawable/rounded_corner1</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:textColor">#000</item>
+    </style>
+
 </resources>
