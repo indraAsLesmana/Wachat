@@ -17,6 +17,8 @@ import java.util.TimeZone;
 public class Helpers {
     private static ProgressDialog mProgressDialog;
     private static final String TAG = "Helpers";
+    public static final String DATE_STYLE_SEPARATOR = "EEEE yyyy-MM-dd";
+    public static final String DATE_STYLE_ONLY_TIME = "HH:mm";
 
 
     public static void showProgressDialog(Context context) {
@@ -35,9 +37,9 @@ public class Helpers {
         }
     }
 
-    public static String convertUnixTime(long unixSeconds) {
+    public static String convertUnixTime(long unixSeconds, String timestyle) {
         Date date = new Date(unixSeconds); // *1000 is to convert seconds to milliseconds, dont mutiple * 1000 in firebase
-        SimpleDateFormat sdf = new SimpleDateFormat("EEEE HH:mm"); // the format of your date
+        SimpleDateFormat sdf = new SimpleDateFormat(timestyle); // the format of your date
 //        sdf.setTimeZone(TimeZone.getTimeZone("UTC+07:00"));
 //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); // the format of your date
 //        sdf.setTimeZone(TimeZone.getTimeZone("GMT+7")); // give a timezone reference for formating (see comment at the bottom

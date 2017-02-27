@@ -23,6 +23,8 @@ import java.util.List;
 
 public class ChatAdapter extends ArrayAdapter<Chat_model> {
 
+    private static String lastTime = "";
+
     public ChatAdapter(Context context, int resource, List<Chat_model> objects) {
         super(context, resource, objects);
     }
@@ -37,10 +39,22 @@ public class ChatAdapter extends ArrayAdapter<Chat_model> {
 
         LinearLayout senderLayout = (LinearLayout) convertView.findViewById(R.id.layout_sender);
         LinearLayout receiverLayout = (LinearLayout) convertView.findViewById(R.id.layout_receiver);
+        TextView date_separator = (TextView) convertView.findViewById(R.id.date_separator);
 
 
         Chat_model message = getItem(position);
         long time = Long.valueOf(message.getmTimeStamp().toString());
+        String timeResult = Helpers.convertUnixTime(time, Helpers.DATE_STYLE_SEPARATOR);
+
+        // create separator logic.
+        if (!timeResult.equals(lastTime)){
+            date_separator.setVisibility(View.VISIBLE);
+            date_separator.setText(timeResult);
+            lastTime = timeResult;
+        } else {
+            date_separator.setVisibility(View.GONE);
+            lastTime = timeResult;
+        }
 
         boolean isPhoto = message.getmPhotoUrl() != null;
 
@@ -57,7 +71,7 @@ public class ChatAdapter extends ArrayAdapter<Chat_model> {
             photoImageView_sender.setVisibility(View.VISIBLE);
             messageTextView_sender.setText(message.getmMessages());
 
-            timeStampTextView.setText(Helpers.convertUnixTime(time));
+            timeStampTextView.setText(Helpers.convertUnixTime(time, Helpers.DATE_STYLE_ONLY_TIME));
 
         }else {
             //setLayout
@@ -71,7 +85,7 @@ public class ChatAdapter extends ArrayAdapter<Chat_model> {
             photoImageView_receiver.setVisibility(View.VISIBLE);
             messageTextView_receiver.setText(message.getmMessages());
 
-            timeStampTextView.setText(Helpers.convertUnixTime(time));
+            timeStampTextView.setText(Helpers.convertUnixTime(time, Helpers.DATE_STYLE_ONLY_TIME));
 
         }
 

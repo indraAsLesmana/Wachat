@@ -108,6 +108,7 @@ public class FragmentContact extends Fragment {
 
                 Intent intent = new Intent(getActivity(), ChatActivity.class);
                 intent.putExtra(Constant.KEY_USER, userTargetChat);
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP); //prevent user double click, couse open double chat activity
 
                 if (userTargetChat != null){
                     startActivity(intent);
