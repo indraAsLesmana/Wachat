@@ -101,8 +101,6 @@ public class FragmentContact extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String userTargetId = idlist.get(position);
-
                 UserContact.UserDetail userTargetChat =
                         new UserContact.UserDetail(idlist.get(position), contact.get(position));
 
