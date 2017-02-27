@@ -14,15 +14,18 @@ import com.example.indraaguslesmana.wachat.R;
 import com.example.indraaguslesmana.wachat.Utility.Constant;
 import com.example.indraaguslesmana.wachat.Utility.PreferenceUtils;
 import com.example.indraaguslesmana.wachat.WaChat;
+import com.example.indraaguslesmana.wachat.adapter.ChatAdapter;
+import com.example.indraaguslesmana.wachat.model.Chat_model;
 import com.example.indraaguslesmana.wachat.model.Messages_Detail;
 import com.example.indraaguslesmana.wachat.model.UserContact;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -32,12 +35,14 @@ public class FragmentChat extends Fragment {
 
     private ListView listView;
     private ArrayAdapter<String> chatArrayAdapter;
-    private ArrayList<String> chatArrayList;
-    private ArrayList<String> listUid;
     private FirebaseDatabase firebaseDatabase;
     private UserContact userContact;
     private String userid;
+    private ArrayList<String> recentChatlist;
+    private ArrayAdapter<String> chatListAdapter;
 
+
+    String uid = PreferenceUtils.getSinglePrefrence(getActivity(), PreferenceUtils.PREFERENCE_USER_ID);
     List<String> nameResult;
 
     private static final String TAG = "FragmentChat";
@@ -45,42 +50,50 @@ public class FragmentChat extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        chatArrayList = new ArrayList<>();
-        listUid = new ArrayList<>();
-        nameResult = new ArrayList<>();
-        userContact = new UserContact();
+        recentChatlist = new ArrayList<>();
 
-        userid = PreferenceUtils.getSinglePrefrence(getActivity(), PreferenceUtils.PREFERENCE_USER_ID);
 
         firebaseDatabase = WaChat.getmFirebaseDatabase();
         firebaseDatabase.getReference()
+                .child(WaChat.STRUCKTUR_VERSION)
                 .child(Constant.KEY_CHAT)
-                .child(userid)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
+                .child(uid)
+                .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            listUid.add(snapshot.getKey());
 
+                        int index = 0;
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                            recentChatlist.add(snapshot.getKey());
+
+                            DatabaseReference referenceMessage =
+                                    dataSnapshot.child(recentChatlist.get(index))
+                                            .child(Constant.KEY_MESSAGE).getRef();
+
+                            for (DataSnapshot snap : snapshot.getChildren())
+                            index++;
                         }
 
-                        /*for (String key : dataSnapshot.getKey()){
-                            String key = snapshot.getKey();
-                            Log.d(TAG, "onDataChange: " + snapshot.getChildrenCount());
-                            listUid.add(key);
+                        //get all list, recent chat target uid
+                        /*for (int i = 0; i < dataSnapshot.getChildrenCount(); i++) {
+
+//                            recentChatlist.add(dataSnapshot.ge());
+                            Log.d(TAG, "onDataChange: " + dataSnapshot.getKey());
+
+                            DatabaseReference referenceMessage =
+                                    dataSnapshot.child(recentChatlist.get(i))
+                                            .child(Constant.KEY_MESSAGE).getRef();
+
+
+                            //getting all message for each targetUid
+                            *//*for (DataSnapshot snapshot : dataSnapshot
+                                    .child(recentChatlist.get(i))
+                                    .child(Constant.KEY_MESSAGE)
+                                    .getChildren()){
+                            }*//*
 
                         }*/
 
-                        // TODO must be add correctyly to ...
-                        /*if (listUid != null) {
-                            Log.d(TAG, "onDataChange: " + listUid.toString());
-                            for (String targetUser : listUid){
-                                String name = getUserNameById(targetUser);
-                                nameResult.add(name);
-                            }
-                            chatArrayList.addAll(nameResult);
-                            chatArrayAdapter.notifyDataSetChanged();
-                        }*/
                     }
 
                     @Override
@@ -89,6 +102,7 @@ public class FragmentChat extends Fragment {
                     }
                 });
 
+
     }
 
     @Nullable
@@ -96,16 +110,15 @@ public class FragmentChat extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_listview, container, false);
-        /*chatArrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_user_item, chatArrayList);
+//        chatListAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_user_item, contact);
 
-        listView = (ListView) rootView.findViewById(R.id.list_user);
-        listView.setAdapter(chatArrayAdapter);*/
 
         return rootView;
     }
 
     private String getUserNameById (String userId){
             firebaseDatabase.getReference()
+                    .child(WaChat.STRUCKTUR_VERSION)
                     .child(Constant.KEY_USER)
                     .child(userId)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
