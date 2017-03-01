@@ -4,14 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.indraaguslesmana.wachat.R;
 import com.example.indraaguslesmana.wachat.Utility.Constant;
@@ -34,13 +32,10 @@ import java.util.List;
 public class FragmentContact extends Fragment {
     private static final String TAG = FragmentContact.class.getSimpleName();
 
-    private ListView listView;
     private ArrayAdapter<String> userContactArrayAdapter;
     private ArrayList<String> contact;
     private ArrayList<String> idlist;
     private HashMap<String, String> contacList = new HashMap<>();
-
-    private FirebaseDatabase firebaseDatabase;
 
 
     @Override
@@ -49,7 +44,7 @@ public class FragmentContact extends Fragment {
         contact = new ArrayList<>();
         idlist = new ArrayList<>();
 
-        firebaseDatabase = WaChat.getmFirebaseDatabase();
+        FirebaseDatabase firebaseDatabase = WaChat.getmFirebaseDatabase();
         firebaseDatabase.getReference()
                 .child(WaChat.STRUCKTUR_VERSION)
                 .child(Constant.KEY_USER)
@@ -95,7 +90,7 @@ public class FragmentContact extends Fragment {
 
         userContactArrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_user_item, contact);
 
-        listView = (ListView) rootView.findViewById(R.id.list_user);
+        ListView listView = (ListView) rootView.findViewById(R.id.list_user);
         listView.setAdapter(userContactArrayAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

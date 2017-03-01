@@ -14,15 +14,12 @@ import com.example.indraaguslesmana.wachat.R;
 import com.example.indraaguslesmana.wachat.Utility.Constant;
 import com.example.indraaguslesmana.wachat.Utility.PreferenceUtils;
 import com.example.indraaguslesmana.wachat.WaChat;
-import com.example.indraaguslesmana.wachat.adapter.ChatAdapter;
 import com.example.indraaguslesmana.wachat.model.Chat_model;
-import com.example.indraaguslesmana.wachat.model.Messages_Detail;
 import com.example.indraaguslesmana.wachat.model.UserContact;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -52,7 +49,6 @@ public class FragmentChat extends Fragment {
         super.onCreate(savedInstanceState);
         recentChatlist = new ArrayList<>();
 
-
         firebaseDatabase = WaChat.getmFirebaseDatabase();
         firebaseDatabase.getReference()
                 .child(WaChat.STRUCKTUR_VERSION)
@@ -65,34 +61,37 @@ public class FragmentChat extends Fragment {
                         int index = 0;
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                             recentChatlist.add(snapshot.getKey());
+//                            Log.i(TAG, "onDataChange: " + snapshot.getRef());
+
+                            /*for (DataSnapshot snapshot1 : snapshot.getChildren()){
+                                Log.d(TAG, "onDataChange: " + snapshot1.getRef());
+
+                                Chat_model chat = snapshot1.child(Constant.KEY_MESSAGE).getValue(Chat_model.class);
+                                Log.d(TAG, "onDataChange: " + chat.getmMessages());
+                            }*/
 
                             DatabaseReference referenceMessage =
                                     dataSnapshot.child(recentChatlist.get(index))
                                             .child(Constant.KEY_MESSAGE).getRef();
 
-                            for (DataSnapshot snap : snapshot.getChildren())
+                            referenceMessage.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    Chat_model chat = dataSnapshot.getValue(Chat_model.class);
+                                    Log.d(TAG, "onDataChange: " + chat.getmMessages());
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+//                            Log.d(TAG, "onDataChange: " + referenceMessage.getRef());
+
                             index++;
+//                          Log.i(TAG, "onDataChange: " + index);
                         }
-
-                        //get all list, recent chat target uid
-                        /*for (int i = 0; i < dataSnapshot.getChildrenCount(); i++) {
-
-//                            recentChatlist.add(dataSnapshot.ge());
-                            Log.d(TAG, "onDataChange: " + dataSnapshot.getKey());
-
-                            DatabaseReference referenceMessage =
-                                    dataSnapshot.child(recentChatlist.get(i))
-                                            .child(Constant.KEY_MESSAGE).getRef();
-
-
-                            //getting all message for each targetUid
-                            *//*for (DataSnapshot snapshot : dataSnapshot
-                                    .child(recentChatlist.get(i))
-                                    .child(Constant.KEY_MESSAGE)
-                                    .getChildren()){
-                            }*//*
-
-                        }*/
 
                     }
 
@@ -111,7 +110,6 @@ public class FragmentChat extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_listview, container, false);
 //        chatListAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_user_item, contact);
-
 
         return rootView;
     }
