@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -55,7 +54,7 @@ public class ChatActivity extends AppCompatActivity {
     private FirebaseDatabase firebaseDatabase;
     private ChildEventListener mChilEventListener;
     private DatabaseReference mDatabasePreference;
-    
+
     private UserContact.UserDetail userTargetChat;
     private String targetUId;
     private String targetName;
@@ -203,13 +202,12 @@ public class ChatActivity extends AppCompatActivity {
                             .setValue(userTargetChat);
                 }
 
-                Chat_model chatmodel = new Chat_model();
-                chatmodel.setmMessages(mEditMessage.getText().toString());
-
+                String message = mEditMessage.getText().toString();
                 Map<String, Object> time = new HashMap<>();
                 time.put(TIME_STAMP, ServerValue.TIMESTAMP);
-                chatmodel.setmTimeStamp(time.get(TIME_STAMP));
-                chatmodel.setSenderId(uid);
+                Object timeResult = time.get(TIME_STAMP);
+
+                Chat_model chatmodel = new Chat_model(uid, timeResult, message);
 
                 firebaseDatabase.getReference()
                         .child(WaChat.STRUCKTUR_VERSION)
@@ -251,13 +249,12 @@ public class ChatActivity extends AppCompatActivity {
                             .setValue(userDetail);
                 }
 
-                Chat_model chatmodel = new Chat_model();
-                chatmodel.setmMessages(mEditMessage.getText().toString());
-
+                String message = mEditMessage.getText().toString();
                 Map<String, Object> time = new HashMap<>();
                 time.put(TIME_STAMP, ServerValue.TIMESTAMP);
-                chatmodel.setmTimeStamp(time.get(TIME_STAMP));
-                chatmodel.setSenderId(uid);
+                Object timeResult = time.get(TIME_STAMP);
+
+                Chat_model chatmodel = new Chat_model(uid, timeResult, message);
 
                 firebaseDatabase.getReference()
                         .child(WaChat.STRUCKTUR_VERSION)
