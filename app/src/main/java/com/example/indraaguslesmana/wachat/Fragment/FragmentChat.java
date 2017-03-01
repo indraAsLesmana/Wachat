@@ -41,6 +41,7 @@ public class FragmentChat extends Fragment {
     private UserContact userContact;
     private String userid;
     private ArrayList<String> recentChatlist;
+    private ArrayList<Chat_model> recentChat;
     private ArrayAdapter<String> chatListAdapter;
 
 
@@ -53,6 +54,7 @@ public class FragmentChat extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         recentChatlist = new ArrayList<>();
+        recentChat = new ArrayList<>();
 
         firebaseDatabase = WaChat.getmFirebaseDatabase();
         firebaseDatabase.getReference()
@@ -75,18 +77,20 @@ public class FragmentChat extends Fragment {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
 //                                    Log.d(TAG, "onDataChange: " + dataSnapshot.getValue());
-                                    String data = dataSnapshot.getValue().toString();
 
-                                    if (data != null || !data.isEmpty()){
+                                    Chat_model chat = dataSnapshot.getValue(Chat_model.class);
+                                    recentChat.add(chat);
+                                    Log.d(TAG, "onDataChange: " + recentChat.get(0).getMessages());
+                                    /*if (data != null || !data.isEmpty()){
                                         Chat_model2 chatResult = jsonParse(data);
-                                        Log.d(TAG, "onDataChange: " + chatResult.getmMessages());
+                                        Log.d(TAG, "onDataChange: " + chatResult.getMessages());
 
-                                    }
+                                    }*/
 
                                     /*Chat_model2 chat = dataSnapshot.getValue(Chat_model2.class);
-                                    Log.d(TAG, "onDataChange: " + chat.getmMessages());*/
+                                    Log.d(TAG, "onDataChange: " + chat.getMessages());*/
                                     /*Chat_model chat = dataSnapshot.getValue(Chat_model.class);
-                                    Log.d(TAG, "onDataChange: " + chat.getmMessages());*/
+                                    Log.d(TAG, "onDataChange: " + chat.getMessages());*/
                                 }
 
                                 @Override

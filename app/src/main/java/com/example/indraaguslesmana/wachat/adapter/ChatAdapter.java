@@ -43,7 +43,7 @@ public class ChatAdapter extends ArrayAdapter<Chat_model> {
 
 
         Chat_model message = getItem(position);
-        long time = Long.valueOf(message.getmTimeStamp().toString());
+        long time = Long.valueOf(message.getTime_stamp().toString());
         String timeResult = Helpers.convertUnixTime(time, Helpers.DATE_STYLE_SEPARATOR);
 
         // create separator logic.
@@ -56,9 +56,9 @@ public class ChatAdapter extends ArrayAdapter<Chat_model> {
             lastTime = timeResult;
         }
 
-        boolean isPhoto = message.getmPhotoUrl() != null;
+//        boolean isPhoto = message.getPhoto_url() != null;
 
-        if (message.getSenderId().equals(PreferenceUtils.getSinglePrefrence(getContext(),
+        if (message.getSender_id().equals(PreferenceUtils.getSinglePrefrence(getContext(),
                 PreferenceUtils.PREFERENCE_USER_ID))){
             //setLayout
             senderLayout.setVisibility(View.VISIBLE);
@@ -69,7 +69,7 @@ public class ChatAdapter extends ArrayAdapter<Chat_model> {
             TextView timeStampTextView = (TextView) convertView.findViewById(R.id.time_stamp_sender);
 
             photoImageView_sender.setVisibility(View.VISIBLE);
-            messageTextView_sender.setText(message.getmMessages());
+            messageTextView_sender.setText(message.getMessages());
 
             timeStampTextView.setText(Helpers.convertUnixTime(time, Helpers.DATE_STYLE_ONLY_TIME));
 
@@ -83,7 +83,7 @@ public class ChatAdapter extends ArrayAdapter<Chat_model> {
             TextView timeStampTextView = (TextView) convertView.findViewById(R.id.time_stamp_receiver);
 
             photoImageView_receiver.setVisibility(View.VISIBLE);
-            messageTextView_receiver.setText(message.getmMessages());
+            messageTextView_receiver.setText(message.getMessages());
 
             timeStampTextView.setText(Helpers.convertUnixTime(time, Helpers.DATE_STYLE_ONLY_TIME));
 
@@ -94,16 +94,16 @@ public class ChatAdapter extends ArrayAdapter<Chat_model> {
             messageTextView_sender.setVisibility(View.GONE);
             photoImageView.setVisibility(View.VISIBLE);
             Glide.with(photoImageView.getContext())
-                    .load(message.getmPhotoUrl())
+                    .load(message.getPhoto_url())
                     .into(photoImageView);
         } else {
             messageTextView_sender.setVisibility(View.VISIBLE);
             photoImageView.setVisibility(View.GONE);
-            messageTextView_sender.setText(message.getmMessages());
+            messageTextView_sender.setText(message.getMessages());
         }*/
 
         /*
-        long time = Long.valueOf(message.getmTimeStamp().toString());
+        long time = Long.valueOf(message.getTime_stamp().toString());
         timeStampTextView.setText(Helpers.convertUnixTime(time));
         */
 

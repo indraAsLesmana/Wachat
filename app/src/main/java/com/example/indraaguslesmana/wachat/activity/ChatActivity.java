@@ -201,7 +201,7 @@ public class ChatActivity extends AppCompatActivity {
                 time.put(TIME_STAMP, ServerValue.TIMESTAMP);
                 Object timeResult = time.get(TIME_STAMP);
 
-                Chat_model chatmodel = new Chat_model(uid, timeResult, message);
+                Chat_model chatmodel = new Chat_model(message, timeResult, uid);
 
                 firebaseDatabase.getReference()
                         .child(WaChat.STRUCKTUR_VERSION)
@@ -248,7 +248,7 @@ public class ChatActivity extends AppCompatActivity {
                 time.put(TIME_STAMP, ServerValue.TIMESTAMP);
                 Object timeResult = time.get(TIME_STAMP);
 
-                Chat_model chatmodel = new Chat_model(uid, timeResult, message);
+                Chat_model chatmodel = new Chat_model(message, timeResult, uid);
 
                 firebaseDatabase.getReference()
                         .child(WaChat.STRUCKTUR_VERSION)

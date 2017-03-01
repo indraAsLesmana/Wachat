@@ -5,56 +5,40 @@ package com.example.indraaguslesmana.wachat.model;
  */
 
 public class Chat_model {
-    private String mMessages;
-    private Object mTimeStamp;
-    private String mPhotoUrl;
-    private String senderId;
+    private String messages;
+    private Object time_stamp;
+    private String sender_id;
 
     public Chat_model() {
     }
 
-    public Chat_model(String mMessages, Object mTimeStamp, String mPhotoUrl, String senderId) {
-        this.mMessages = mMessages;
-        this.mTimeStamp = mTimeStamp;
-        this.mPhotoUrl = mPhotoUrl;
-        this.senderId = senderId;
+    public Chat_model(String messages, Object time_stamp, String sender_id) {
+        this.messages = messages;
+        this.time_stamp = time_stamp;
+        this.sender_id = sender_id;
     }
 
-    public Chat_model(String senderId, Object mTimeStamp, String mMessages) {
-        this.senderId = senderId;
-        this.mTimeStamp = mTimeStamp;
-        this.mMessages = mMessages;
+    public String getMessages() {
+        return messages;
     }
 
-    public String getmMessages() {
-        return mMessages;
+    public void setMessages(String messages) {
+        this.messages = messages;
     }
 
-    public void setmMessages(String mMessages) {
-        this.mMessages = mMessages;
+    public Object getTime_stamp() {
+        return time_stamp;
     }
 
-    public Object getmTimeStamp() {
-        return mTimeStamp;
+    public void setTime_stamp(Object time_stamp) {
+        this.time_stamp = time_stamp;
     }
 
-    public void setmTimeStamp(Object mTimeStamp) {
-        this.mTimeStamp = mTimeStamp;
+    public String getSender_id() {
+        return sender_id;
     }
 
-    public String getmPhotoUrl() {
-        return mPhotoUrl;
-    }
-
-    public void setmPhotoUrl(String mPhotoUrl) {
-        this.mPhotoUrl = mPhotoUrl;
-    }
-
-    public String getSenderId() {
-        return senderId;
-    }
-
-    public void setSenderId(String senderId) {
-        this.senderId = senderId;
+    public void setSender_id(String sender_id) {
+        this.sender_id = sender_id;
     }
 }
