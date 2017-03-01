@@ -64,8 +64,6 @@ public class WaChat extends Application {
         mDatabaseReferenceGLOBALMESSAGES =
                 mFirebaseDatabase.getReference().child(STRUCKTUR_VERSION).child(Constant.KEY_GLOBALMESSAGES);
 
-        Log.d(TAG, "onCreate: " + mDatabaseReferenceUSER.toString());
-
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {

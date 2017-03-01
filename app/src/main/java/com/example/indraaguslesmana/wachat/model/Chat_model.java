@@ -5,25 +5,25 @@ package com.example.indraaguslesmana.wachat.model;
  */
 
 public class Chat_model {
-    private String messages;
+    private String message;
     private Object time_stamp;
     private String sender_id;
 
     public Chat_model() {
     }
 
-    public Chat_model(String messages, Object time_stamp, String sender_id) {
-        this.messages = messages;
+    public Chat_model(String message, Object time_stamp, String sender_id) {
+        this.message = message;
         this.time_stamp = time_stamp;
         this.sender_id = sender_id;
     }
 
-    public String getMessages() {
-        return messages;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMessages(String messages) {
-        this.messages = messages;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public Object getTime_stamp() {

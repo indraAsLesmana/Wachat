@@ -69,7 +69,7 @@ public class ChatAdapter extends ArrayAdapter<Chat_model> {
             TextView timeStampTextView = (TextView) convertView.findViewById(R.id.time_stamp_sender);
 
             photoImageView_sender.setVisibility(View.VISIBLE);
-            messageTextView_sender.setText(message.getMessages());
+            messageTextView_sender.setText(message.getMessage());
 
             timeStampTextView.setText(Helpers.convertUnixTime(time, Helpers.DATE_STYLE_ONLY_TIME));
 
@@ -83,7 +83,7 @@ public class ChatAdapter extends ArrayAdapter<Chat_model> {
             TextView timeStampTextView = (TextView) convertView.findViewById(R.id.time_stamp_receiver);
 
             photoImageView_receiver.setVisibility(View.VISIBLE);
-            messageTextView_receiver.setText(message.getMessages());
+            messageTextView_receiver.setText(message.getMessage());
 
             timeStampTextView.setText(Helpers.convertUnixTime(time, Helpers.DATE_STYLE_ONLY_TIME));
 
@@ -99,7 +99,7 @@ public class ChatAdapter extends ArrayAdapter<Chat_model> {
         } else {
             messageTextView_sender.setVisibility(View.VISIBLE);
             photoImageView.setVisibility(View.GONE);
-            messageTextView_sender.setText(message.getMessages());
+            messageTextView_sender.setText(message.getMessage());
         }*/
 
         /*

@@ -14,7 +14,6 @@ import com.example.indraaguslesmana.wachat.R;
 import com.example.indraaguslesmana.wachat.Utility.Constant;
 import com.example.indraaguslesmana.wachat.Utility.PreferenceUtils;
 import com.example.indraaguslesmana.wachat.WaChat;
-import com.example.indraaguslesmana.wachat.model.Chat_model;
 import com.example.indraaguslesmana.wachat.model.Chat_model2;
 import com.example.indraaguslesmana.wachat.model.UserContact;
 import com.google.firebase.database.DataSnapshot;
@@ -40,8 +39,8 @@ public class FragmentChat extends Fragment {
     private FirebaseDatabase firebaseDatabase;
     private UserContact userContact;
     private String userid;
-    private ArrayList<String> recentChatlist;
-    private ArrayList<Chat_model> recentChat;
+    private ArrayList<String> recentChatTarget;
+    private ArrayList<DatabaseReference> recentChat;
     private ArrayAdapter<String> chatListAdapter;
 
 
@@ -53,7 +52,7 @@ public class FragmentChat extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        recentChatlist = new ArrayList<>();
+        recentChatTarget = new ArrayList<>();
         recentChat = new ArrayList<>();
 
         firebaseDatabase = WaChat.getmFirebaseDatabase();
@@ -67,42 +66,17 @@ public class FragmentChat extends Fragment {
 
                         int index = 0;
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                            recentChatlist.add(snapshot.getKey());
+                            recentChatTarget.add(index, snapshot.getKey());
+                            Log.d(TAG, "KEY TARGET----------> " + recentChatTarget.get(index));
 
                             DatabaseReference referenceMessage =
-                                    dataSnapshot.child(recentChatlist.get(index))
+                                    dataSnapshot.child(recentChatTarget.get(index))
                                             .child(Constant.KEY_MESSAGE).getRef();
 
-                            referenceMessage.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-//                                    Log.d(TAG, "onDataChange: " + dataSnapshot.getValue());
-
-                                    Chat_model chat = dataSnapshot.getValue(Chat_model.class);
-                                    recentChat.add(chat);
-                                    Log.d(TAG, "onDataChange: " + recentChat.get(0).getMessages());
-                                    /*if (data != null || !data.isEmpty()){
-                                        Chat_model2 chatResult = jsonParse(data);
-                                        Log.d(TAG, "onDataChange: " + chatResult.getMessages());
-
-                                    }*/
-
-                                    /*Chat_model2 chat = dataSnapshot.getValue(Chat_model2.class);
-                                    Log.d(TAG, "onDataChange: " + chat.getMessages());*/
-                                    /*Chat_model chat = dataSnapshot.getValue(Chat_model.class);
-                                    Log.d(TAG, "onDataChange: " + chat.getMessages());*/
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
-                            });
-
-//                            Log.d(TAG, "onDataChange: " + referenceMessage.getRef());
+                            recentChat.add(index, referenceMessage);
+                            Log.d(TAG, "TARGET MESSAGE PATH --------> " + recentChat.get(index));
 
                             index++;
-//                          Log.i(TAG, "onDataChange: " + index);
                         }
 
                     }
@@ -113,12 +87,36 @@ public class FragmentChat extends Fragment {
                     }
                 });
 
+        Log.d(TAG, "onCreate: recetChat =" + recentChat.size()
+                + "recentTarget=" + recentChatTarget.size());
+
+        if (recentChat.size() > 0 && recentChatTarget.size() > 0){
+            firebaseDatabase.getReference()
+                    .child(WaChat.STRUCKTUR_VERSION)
+                    .child(Constant.KEY_CHAT)
+                    .child(uid)
+                    .child(recentChatTarget.get(1))
+                    .child(Constant.KEY_MESSAGE)
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Log.d(TAG, "VALUE -----> " + dataSnapshot.getValue());
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+        }
+
 
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_listview, container, false);
 //        chatListAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_user_item, contact);
