@@ -42,18 +42,13 @@ public class ChatActivity extends AppCompatActivity {
     private static final String TIME_STAMP = "timeStamp";
 
     private ChatAdapter mChatAdapter;
-    private ImageButton mSendMessage;
-    private ImageButton mTakeGaleri;
     private EditText mEditMessage;
-    private ListView mListChat;
     String uid = PreferenceUtils.getSinglePrefrence(this, PreferenceUtils.PREFERENCE_USER_ID);
     String name = PreferenceUtils.getSinglePrefrence(this, PreferenceUtils.PREFERENCE_USER_NAME);
     Messages_Detail messages_detail = new Messages_Detail();
 
     //firebase
     private FirebaseDatabase firebaseDatabase;
-    private ChildEventListener mChilEventListener;
-    private DatabaseReference mDatabasePreference;
 
     private UserContact.UserDetail userTargetChat;
     private String targetUId;
@@ -74,10 +69,10 @@ public class ChatActivity extends AppCompatActivity {
         //Change Action Bar title with Name, if private chat
         setTitle(targetName);
 
-        mSendMessage = (ImageButton) findViewById(R.id.send_chat);
-        mTakeGaleri = (ImageButton) findViewById(R.id.imageSelect);
+        ImageButton mSendMessage = (ImageButton) findViewById(R.id.send_chat);
+        ImageButton mTakeGaleri = (ImageButton) findViewById(R.id.imageSelect);
         mEditMessage = (EditText) findViewById(R.id.ed_chat);
-        mListChat = (ListView) findViewById(R.id.list_chat);
+        ListView mListChat = (ListView) findViewById(R.id.list_chat);
 
         List<Chat_model> chatModels = new ArrayList<>();
         mChatAdapter = new ChatAdapter(this, R.layout.message_item_layout, chatModels);
@@ -85,14 +80,13 @@ public class ChatActivity extends AppCompatActivity {
 
         //firebase initialize
         firebaseDatabase = WaChat.getmFirebaseDatabase();
-        mDatabasePreference = WaChat.getmDatabaseReferenceCHAT()
+        DatabaseReference mDatabasePreference = WaChat.getmDatabaseReferenceCHAT()
                 .child(uid)
                 .child(targetUId)
                 .child(Constant.KEY_MESSAGE);
 
 
-
-        mChilEventListener = new ChildEventListener() {
+        ChildEventListener mChilEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Chat_model chatmodel = dataSnapshot.getValue(Chat_model.class);

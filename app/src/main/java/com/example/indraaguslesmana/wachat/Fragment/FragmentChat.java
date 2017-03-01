@@ -15,6 +15,7 @@ import com.example.indraaguslesmana.wachat.Utility.Constant;
 import com.example.indraaguslesmana.wachat.Utility.PreferenceUtils;
 import com.example.indraaguslesmana.wachat.WaChat;
 import com.example.indraaguslesmana.wachat.model.Chat_model;
+import com.example.indraaguslesmana.wachat.model.Chat_model2;
 import com.example.indraaguslesmana.wachat.model.UserContact;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,7 +23,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -61,14 +66,6 @@ public class FragmentChat extends Fragment {
                         int index = 0;
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                             recentChatlist.add(snapshot.getKey());
-//                            Log.i(TAG, "onDataChange: " + snapshot.getRef());
-
-                            /*for (DataSnapshot snapshot1 : snapshot.getChildren()){
-                                Log.d(TAG, "onDataChange: " + snapshot1.getRef());
-
-                                Chat_model chat = snapshot1.child(Constant.KEY_MESSAGE).getValue(Chat_model.class);
-                                Log.d(TAG, "onDataChange: " + chat.getmMessages());
-                            }*/
 
                             DatabaseReference referenceMessage =
                                     dataSnapshot.child(recentChatlist.get(index))
@@ -77,8 +74,19 @@ public class FragmentChat extends Fragment {
                             referenceMessage.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    Chat_model chat = dataSnapshot.getValue(Chat_model.class);
-                                    Log.d(TAG, "onDataChange: " + chat.getmMessages());
+//                                    Log.d(TAG, "onDataChange: " + dataSnapshot.getValue());
+                                    String data = dataSnapshot.getValue().toString();
+
+                                    if (data != null || !data.isEmpty()){
+                                        Chat_model2 chatResult = jsonParse(data);
+                                        Log.d(TAG, "onDataChange: " + chatResult.getmMessages());
+
+                                    }
+
+                                    /*Chat_model2 chat = dataSnapshot.getValue(Chat_model2.class);
+                                    Log.d(TAG, "onDataChange: " + chat.getmMessages());*/
+                                    /*Chat_model chat = dataSnapshot.getValue(Chat_model.class);
+                                    Log.d(TAG, "onDataChange: " + chat.getmMessages());*/
                                 }
 
                                 @Override
@@ -112,6 +120,60 @@ public class FragmentChat extends Fragment {
 //        chatListAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_user_item, contact);
 
         return rootView;
+    }
+
+    private Chat_model2 jsonParse (String stringSource){
+
+        JSONObject baseResponse = null;
+
+        if (stringSource.isEmpty() || stringSource.length() == 0){
+            return null;
+        }
+
+        try {
+             baseResponse = new JSONObject(stringSource.trim());
+            Log.d(TAG, "jsonParse: baseResponse" + baseResponse + " length "+ baseResponse.length());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Chat_model2 chat = null;
+
+        if (baseResponse.length() > 0){
+            for (int i = 0; i < baseResponse.length(); i++) {
+
+                try {
+
+                    Iterator<String> keys = baseResponse.keys();
+                    while (keys.hasNext()){
+                        String key = keys.next();
+                        if ( baseResponse.get(key) instanceof JSONObject ) {
+                            JSONObject xx = new JSONObject(baseResponse.get(key).toString());
+
+                            String sender = xx.getString("senderId");
+                            String timeStamp = xx.getString("mTimeStamp");
+                            String messages = xx.getString("mMessages");
+
+                            chat = new Chat_model2(messages, timeStamp, sender);
+
+                        }
+                    }
+
+                    /*String sender = baseResponse.getJSONObject("-Ke7HbX06Z0W-Bo9jNl1").getString("senderId");
+                    String timeStamp = baseResponse.getJSONObject("-Ke7HbX06Z0W-Bo9jNl1").getString("mTimeStamp");
+                    String messages = baseResponse.getJSONObject("-Ke7HbX06Z0W-Bo9jNl1").getString("mMessages");*/
+
+//                    Log.d(TAG, "jsonParse: " + sender + timeStamp + messages);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+        return chat;
     }
 
     private String getUserNameById (String userId){
