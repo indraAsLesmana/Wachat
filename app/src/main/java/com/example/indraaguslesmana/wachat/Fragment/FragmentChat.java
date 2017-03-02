@@ -14,6 +14,7 @@ import com.example.indraaguslesmana.wachat.R;
 import com.example.indraaguslesmana.wachat.Utility.Constant;
 import com.example.indraaguslesmana.wachat.Utility.PreferenceUtils;
 import com.example.indraaguslesmana.wachat.WaChat;
+import com.example.indraaguslesmana.wachat.model.Chat_model;
 import com.example.indraaguslesmana.wachat.model.Chat_model2;
 import com.example.indraaguslesmana.wachat.model.UserContact;
 import com.google.firebase.database.DataSnapshot;
@@ -42,6 +43,7 @@ public class FragmentChat extends Fragment {
     private ArrayList<String> recentChatTarget;
     private ArrayList<DatabaseReference> recentChat;
     private ArrayAdapter<String> chatListAdapter;
+    private ArrayList<Chat_model> chatList;
 
 
     String uid = PreferenceUtils.getSinglePrefrence(getActivity(), PreferenceUtils.PREFERENCE_USER_ID);
@@ -54,6 +56,7 @@ public class FragmentChat extends Fragment {
         super.onCreate(savedInstanceState);
         recentChatTarget = new ArrayList<>();
         recentChat = new ArrayList<>();
+        chatList = new ArrayList<>();
 
         firebaseDatabase = WaChat.getmFirebaseDatabase();
         firebaseDatabase.getReference()
@@ -79,6 +82,35 @@ public class FragmentChat extends Fragment {
                             index++;
                         }
 
+                        /*for (int i = 0; i < recentChatTarget.size(); i++) {
+                            Log.d(TAG, "result recent target ----> " + recentChatTarget.get(i));
+                            Log.d(TAG, "result recent chat ----> " + recentChat.get(i));
+                        }*/
+
+                        for (int i = 0; i < recentChatTarget.size(); i++) {
+                            Log.d(TAG, "result recent target ----> " + recentChatTarget.get(i));
+                            Log.d(TAG, "result recent chat ----> " + recentChat.get(i));
+
+                            firebaseDatabase.getReference()
+                                    .child(WaChat.STRUCKTUR_VERSION)
+                                    .child(Constant.KEY_CHAT)
+                                    .child(uid)
+                                    .child(recentChatTarget.get(i))
+                                    .child(Constant.KEY_MESSAGE)
+                                    .addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            Chat_model chat = dataSnapshot.getValue(Chat_model.class);
+                                            Log.d(TAG, "CHAT RESULT ---->" + chat.getMessage());
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+
+                        }
                     }
 
                     @Override
@@ -86,29 +118,6 @@ public class FragmentChat extends Fragment {
 
                     }
                 });
-
-        Log.d(TAG, "onCreate: recetChat =" + recentChat.size()
-                + "recentTarget=" + recentChatTarget.size());
-
-        if (recentChat.size() > 0 && recentChatTarget.size() > 0){
-            firebaseDatabase.getReference()
-                    .child(WaChat.STRUCKTUR_VERSION)
-                    .child(Constant.KEY_CHAT)
-                    .child(uid)
-                    .child(recentChatTarget.get(1))
-                    .child(Constant.KEY_MESSAGE)
-                    .addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Log.d(TAG, "VALUE -----> " + dataSnapshot.getValue());
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-        }
 
 
     }
