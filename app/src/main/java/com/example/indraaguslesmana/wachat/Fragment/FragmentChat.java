@@ -67,6 +67,7 @@ public class FragmentChat extends Fragment {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
+                        //loop throught the target uid, and path to message per target uid
                         int index = 0;
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                             recentChatTarget.add(index, snapshot.getKey());
@@ -82,11 +83,8 @@ public class FragmentChat extends Fragment {
                             index++;
                         }
 
-                        /*for (int i = 0; i < recentChatTarget.size(); i++) {
-                            Log.d(TAG, "result recent target ----> " + recentChatTarget.get(i));
-                            Log.d(TAG, "result recent chat ----> " + recentChat.get(i));
-                        }*/
 
+                        //loop throught Message Child
                         for (int i = 0; i < recentChatTarget.size(); i++) {
                             Log.d(TAG, "result recent target ----> " + recentChatTarget.get(i));
                             Log.d(TAG, "result recent chat ----> " + recentChat.get(i));
@@ -100,8 +98,19 @@ public class FragmentChat extends Fragment {
                                     .addValueEventListener(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
-                                            Chat_model chat = dataSnapshot.getValue(Chat_model.class);
-                                            Log.d(TAG, "CHAT RESULT ---->" + chat.getMessage());
+                                            //getting all chat with Target uid
+                                            for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                                                Chat_model chat = snapshot.getValue(Chat_model.class);
+                                                chatList.add(chat);
+                                                Log.d(TAG, "CHAT RESULT ---->" + chat.getMessage());
+                                            }
+
+                                            //get LAST CHAT
+                                            if (chatList != null && chatList.size() > 0){
+                                                Chat_model chat = chatList.get(chatList.size() -1);
+                                                Log.d(TAG, "LAST CHAT IS ---->  " + chat.getMessage());
+
+                                            }
                                         }
 
                                         @Override
@@ -118,7 +127,6 @@ public class FragmentChat extends Fragment {
 
                     }
                 });
-
 
     }
 
