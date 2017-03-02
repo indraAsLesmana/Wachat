@@ -15,6 +15,7 @@ import com.example.indraaguslesmana.wachat.Utility.Constant;
 import com.example.indraaguslesmana.wachat.Utility.PreferenceUtils;
 import com.example.indraaguslesmana.wachat.WaChat;
 import com.example.indraaguslesmana.wachat.model.Chat_model;
+import com.example.indraaguslesmana.wachat.model.Chat_recent_model;
 import com.example.indraaguslesmana.wachat.model.UserContact;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -39,6 +40,11 @@ public class FragmentChat extends Fragment {
     private ArrayList<DatabaseReference> recentChat;
     private ArrayAdapter<String> chatListAdapter;
     private ArrayList<Chat_model> chatList;
+    private Chat_model chat;
+    private UserContact usercontact;
+    private Chat_recent_model recentChatView_model;
+    private ArrayList<Chat_recent_model> result_recentChat;
+
 
 
     String uid = PreferenceUtils.getSinglePrefrence(getActivity(), PreferenceUtils.PREFERENCE_USER_ID);
@@ -52,6 +58,7 @@ public class FragmentChat extends Fragment {
         recentChatTarget = new ArrayList<>();
         recentChat = new ArrayList<>();
         chatList = new ArrayList<>();
+        result_recentChat = new ArrayList<>();
 
         firebaseDatabase = WaChat.getmFirebaseDatabase();
         firebaseDatabase.getReference()
@@ -83,6 +90,7 @@ public class FragmentChat extends Fragment {
                         for (int i = 0; i < recentChatTarget.size(); i++) {
                             Log.d(TAG, "result recent target ----> " + recentChatTarget.get(i));
                             Log.d(TAG, "result recent chat ----> " + recentChat.get(i));
+                            chat = new Chat_model();
 
                             firebaseDatabase.getReference()
                                     .child(WaChat.STRUCKTUR_VERSION)
@@ -94,18 +102,12 @@ public class FragmentChat extends Fragment {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             //getting all chat with Target uid
-                                            for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                                                Chat_model chat = snapshot.getValue(Chat_model.class);
-                                                chatList.add(chat);
-                                                Log.d(TAG, "CHAT RESULT ---->" + chat.getMessage());
+                                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                                chat = snapshot.getValue(Chat_model.class);
                                             }
 
-                                            //get LAST CHAT
-                                            if (chatList != null && chatList.size() > 0){
-                                                Chat_model chat = chatList.get(chatList.size() -1);
-                                                Log.d(TAG, "LAST CHAT IS ---->  " + chat.getMessage());
-
-                                            }
+                                            // last Chat Message
+                                            Log.d(TAG, "LAST CHAT MESSAGE ---> " + chat.getMessage());
                                         }
 
                                         @Override
@@ -114,6 +116,39 @@ public class FragmentChat extends Fragment {
                                         }
                                     });
 
+                        }
+
+                        for (int i = 0; i < recentChatTarget.size(); i++) {
+                            // loop for get user Detail
+                            userContact = new UserContact();
+                            firebaseDatabase.getReference()
+                                    .child(WaChat.STRUCKTUR_VERSION)
+                                    .child(Constant.KEY_USER)
+                                    .child(recentChatTarget.get(i))
+                                    .addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            usercontact = dataSnapshot.getValue(UserContact.class);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+
+
+                            recentChatView_model = new Chat_recent_model();
+                            if (chat != null && userContact != null){
+                                recentChatView_model = new Chat_recent_model(
+                                        chat.getMessage(),
+                                        chat.getTime_stamp(),
+                                        userContact.getLastSeen(),
+                                        userContact.getName());
+                            }
+
+                            //finish last
+                            result_recentChat.add(recentChatView_model);
                         }
                     }
 
