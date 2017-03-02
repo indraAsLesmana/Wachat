@@ -7,10 +7,11 @@ package com.example.indraaguslesmana.wachat.model;
 public class Chat_recent_model {
 
     //di ambil dari chatModel
-    private String message;
-    private Object time_stamp;
+    private String message;     // view last Message
+    private Object time_stamp;  // view time last message
 
     //di ambil dari uid Target
-    private long lastSeen;
-    private String name;
+    private long lastSeen;      // this indicator is user Online
+    private String name;        // for user target name
+
 }
