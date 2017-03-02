@@ -44,10 +44,13 @@ public class ChatRecentAdapter extends ArrayAdapter<Chat_recent_model> {
             recent_chatName.setText(primary_recent_chat.getName());
             recent_chatMessage.setText(primary_recent_chat.getMessage());
 
-            long time = Long.valueOf(primary_recent_chat.getTime_stamp().toString());
-            String timeResult = Helpers.convertUnixTime(time, Helpers.DATE_STYLE_ONLY_TIME);
+            if (primary_recent_chat.getTime_stamp() != null){
+                String timeResult = primary_recent_chat.getTime_stamp().toString();
+                long time = Long.valueOf(timeResult);
+                timeResult = Helpers.convertUnixTime(time, Helpers.DATE_STYLE_ONLY_TIME);
+                recent_chatTime.setText(timeResult);
+            }
 
-            recent_chatTime.setText(timeResult);
             recent_chatProfileImage.setImageResource(R.drawable.user_pacific);
         }
 

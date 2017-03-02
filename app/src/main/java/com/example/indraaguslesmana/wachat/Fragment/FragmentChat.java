@@ -14,6 +14,7 @@ import com.example.indraaguslesmana.wachat.R;
 import com.example.indraaguslesmana.wachat.Utility.Constant;
 import com.example.indraaguslesmana.wachat.Utility.PreferenceUtils;
 import com.example.indraaguslesmana.wachat.WaChat;
+import com.example.indraaguslesmana.wachat.adapter.ChatRecentAdapter;
 import com.example.indraaguslesmana.wachat.model.Chat_model;
 import com.example.indraaguslesmana.wachat.model.Chat_recent_model;
 import com.example.indraaguslesmana.wachat.model.UserContact;
@@ -41,9 +42,9 @@ public class FragmentChat extends Fragment {
     private ArrayAdapter<String> chatListAdapter;
     private ArrayList<Chat_model> chatList;
     private Chat_model chat;
-    private UserContact usercontact;
     private Chat_recent_model recentChatView_model;
     private ArrayList<Chat_recent_model> result_recentChat;
+    private ChatRecentAdapter view_chatrecentAdapter;
 
 
 
@@ -59,6 +60,9 @@ public class FragmentChat extends Fragment {
         recentChat = new ArrayList<>();
         chatList = new ArrayList<>();
         result_recentChat = new ArrayList<>();
+
+        view_chatrecentAdapter = new ChatRecentAdapter(getActivity(), R.layout.message_item_history,
+                result_recentChat);
 
         firebaseDatabase = WaChat.getmFirebaseDatabase();
         firebaseDatabase.getReference()
@@ -118,17 +122,20 @@ public class FragmentChat extends Fragment {
 
                         }
 
+                        userContact = new UserContact();
                         for (int i = 0; i < recentChatTarget.size(); i++) {
                             // loop for get user Detail
-                            userContact = new UserContact();
+                            Log.d(TAG, "onDataChange: 1" + recentChatTarget.get(i));
+
                             firebaseDatabase.getReference()
                                     .child(WaChat.STRUCKTUR_VERSION)
                                     .child(Constant.KEY_USER)
-                                    .child(recentChatTarget.get(i))
-                                    .addValueEventListener(new ValueEventListener() {
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
-                                            usercontact = dataSnapshot.getValue(UserContact.class);
+                                            Log.d(TAG, "onDataChange: snapsot user" + dataSnapshot.getValue());
+                                            userContact = dataSnapshot.getValue(UserContact.class);
+                                            Log.d(TAG, "onDataChange: user" + userContact.getName());
                                         }
 
                                         @Override
@@ -138,7 +145,6 @@ public class FragmentChat extends Fragment {
                                     });
 
 
-                            recentChatView_model = new Chat_recent_model();
                             if (chat != null && userContact != null){
                                 recentChatView_model = new Chat_recent_model(
                                         chat.getMessage(),
@@ -149,7 +155,13 @@ public class FragmentChat extends Fragment {
 
                             //finish last
                             result_recentChat.add(recentChatView_model);
+                            Log.d(TAG, "resultChat: 1 " + result_recentChat.get(0).getMessage());
+
                         }
+                        Log.d(TAG, "resultChat :" + result_recentChat.get(0).getName());
+
+                        view_chatrecentAdapter.notifyDataSetChanged();
+                        Log.d(TAG, "RESULT ON CREATE " + result_recentChat.size());
                     }
 
                     @Override
@@ -166,7 +178,11 @@ public class FragmentChat extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_listview, container, false);
-//        chatListAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_user_item, contact);
+        ListView mListChat = (ListView) rootView.findViewById(R.id.list_user);
+
+        Log.d(TAG, "RESULT CHAT " + result_recentChat.size());
+
+        mListChat.setAdapter(view_chatrecentAdapter);
 
         return rootView;
     }
