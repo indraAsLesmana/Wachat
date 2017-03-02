@@ -84,11 +84,12 @@ public class FragmentChat extends Fragment {
                                             .child(Constant.KEY_MESSAGE).getRef();
 
                             recentChat.add(index, referenceMessage);
-                            Log.d(TAG, "TARGET MESSAGE PATH --------> " + recentChat.get(index));
+                            Log.d(TAG, "TARGET MESSAGE PATH ---------> " + recentChat.get(index));
 
                             index++;
                         }
 
+                        recentChatView_model = new Chat_recent_model();
 
                         //loop throught Message Child
                         for (int i = 0; i < recentChatTarget.size(); i++) {
@@ -108,10 +109,11 @@ public class FragmentChat extends Fragment {
                                             //getting all chat with Target uid
                                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                                 chat = snapshot.getValue(Chat_model.class);
-                                            }
 
-                                            // last Chat Message
-                                            Log.d(TAG, "LAST CHAT MESSAGE ---> " + chat.getMessage());
+                                            }
+                                            //last CHATr
+                                            Log.d(TAG, "LAST CHAT " + chat.getMessage());
+
                                         }
 
                                         @Override
@@ -122,20 +124,21 @@ public class FragmentChat extends Fragment {
 
                         }
 
-                        userContact = new UserContact();
                         for (int i = 0; i < recentChatTarget.size(); i++) {
                             // loop for get user Detail
                             Log.d(TAG, "onDataChange: 1" + recentChatTarget.get(i));
+                            userContact = new UserContact();
 
                             firebaseDatabase.getReference()
                                     .child(WaChat.STRUCKTUR_VERSION)
                                     .child(Constant.KEY_USER)
+                                    .child(recentChatTarget.get(i))
                                     .addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
-                                            Log.d(TAG, "onDataChange: snapsot user" + dataSnapshot.getValue());
                                             userContact = dataSnapshot.getValue(UserContact.class);
-                                            Log.d(TAG, "onDataChange: user" + userContact.getName());
+                                            Log.d(TAG, "USER NAME ------->" + userContact.getName());
+                                            
                                         }
 
                                         @Override
@@ -144,21 +147,7 @@ public class FragmentChat extends Fragment {
                                         }
                                     });
 
-
-                            if (chat != null && userContact != null){
-                                recentChatView_model = new Chat_recent_model(
-                                        chat.getMessage(),
-                                        chat.getTime_stamp(),
-                                        userContact.getLastSeen(),
-                                        userContact.getName());
-                            }
-
-                            //finish last
-                            result_recentChat.add(recentChatView_model);
-                            Log.d(TAG, "resultChat: 1 " + result_recentChat.get(0).getMessage());
-
                         }
-                        Log.d(TAG, "resultChat :" + result_recentChat.get(0).getName());
 
                         view_chatrecentAdapter.notifyDataSetChanged();
                         Log.d(TAG, "RESULT ON CREATE " + result_recentChat.size());
