@@ -114,19 +114,25 @@ public class FragmentChat extends Fragment {
                                     .child(uid)
                                     .child(recentChatTarget.get(i))
                                     .child(Constant.KEY_MESSAGE)
-                                    .addValueEventListener(new ValueEventListener() {
+                                    .limitToLast(1)
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             //getting all chat with Target uid
                                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                                 chat = snapshot.getValue(Chat_model.class);
 
-                                                recentChatView_modelMessageDetail.setMessage(chat.getMessage());
-                                                recentChatView_modelMessageDetail.setTime_stamp(chat.getTime_stamp());
+                                                recentChatView_modelMessageDetail.
+                                                        setMessage(chat.getMessage());
+                                                recentChatView_modelMessageDetail.
+                                                        setTime_stamp(chat.getTime_stamp());
 
-                                                Log.d(TAG, "onDataChange: Message--->" + recentChatView_modelMessageDetail.getMessage());
 
                                                 messageDetailArray.add(recentChatView_modelMessageDetail);
+
+                                                Log.d(TAG, "onDataChange: Message--->" +
+                                                        recentChatView_modelMessageDetail.getMessage()
+                                                + " " + messageDetailArray.size());
                                             }
 
 
@@ -157,27 +163,42 @@ public class FragmentChat extends Fragment {
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             userContact = dataSnapshot.getValue(UserContact.class);
 
-                                            recentChatView_modelUserDetail.setName(userContact.getName());
-                                            recentChatView_modelUserDetail.setLastSeen(userContact.getLastSeen());
+                                            recentChatView_modelUserDetail
+                                                    .setName(userContact.getName());
+                                            recentChatView_modelUserDetail
+                                                    .setLastSeen(userContact.getLastSeen());
 
                                             userDetailArray.add(recentChatView_modelUserDetail);
+                                            Log.d(TAG, "onDataChange: ---> size user "
+                                                    + userDetailArray.size() + " "
+                                                    + recentChatView_modelUserDetail.getName());
 
-                                            if (userDetailArray.size() != messageDetailArray.size()){
-                                                Toast.makeText(getActivity(), "size message and user is different", Toast.LENGTH_SHORT).show();
-                                            }else {
+                                            if (userDetailArray.size() == messageDetailArray.size()){
+
+                                                Log.d(TAG, "onDataChange: ArraySize ===>" +
+                                                        messageDetailArray.size() + " "
+                                                        + userDetailArray.size() + " target Chat "
+                                                        + recentChatTarget.size());
+
                                                 for (int j = 0; j < recentChatTarget.size(); j++) {
                                                     Chat_recent_model chat = new Chat_recent_model();
-                                                    chat.setName(userDetailArray.get(j).getName());
-                                                    chat.setLastSeen(userDetailArray.get(j).getLastSeen());
-                                                    chat.setMessage(messageDetailArray.get(j).getMessage());
-                                                    chat.setTime_stamp(messageDetailArray.get(j).getTime_stamp());
+                                                    Log.d(TAG, "onDataChange: NAME "
+                                                            + userDetailArray.get(j).getName());
 
-                                                    Log.d(TAG, "onDataChange: --->" + chat.getMessage());
+                                                    chat.setName(userDetailArray
+                                                            .get(j).getName());
+                                                    chat.setLastSeen(userDetailArray
+                                                            .get(j).getLastSeen());
+                                                    chat.setMessage(messageDetailArray
+                                                            .get(j).getMessage());
+                                                    chat.setTime_stamp(messageDetailArray
+                                                            .get(j).getTime_stamp());
+
                                                     arrayChatHistoryResult.add(chat);
                                                 }
+                                                view_chatrecentAdapter.notifyDataSetChanged();
                                             }
 
-                                            view_chatrecentAdapter.notifyDataSetChanged();
                                         }
 
 
@@ -186,9 +207,6 @@ public class FragmentChat extends Fragment {
 
                                         }
                                     });
-
-                            view_chatrecentAdapter.notifyDataSetChanged();
-
 
                         }
 
