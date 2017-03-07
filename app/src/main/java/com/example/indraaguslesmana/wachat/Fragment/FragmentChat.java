@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.indraaguslesmana.wachat.R;
 import com.example.indraaguslesmana.wachat.Utility.Constant;
@@ -40,12 +41,16 @@ public class FragmentChat extends Fragment {
     private ArrayList<String> recentChatTarget;
     private ArrayList<DatabaseReference> recentChat;
     private ArrayAdapter<String> chatListAdapter;
-    private ArrayList<Chat_model> chatList;
     private Chat_model chat;
-    private Chat_recent_model recentChatView_model;
-    private ArrayList<Chat_recent_model> result_recentChat;
+    private Chat_recent_model.UserDetail recentChatView_modelUserDetail;
+    private Chat_recent_model.MessageDetail recentChatView_modelMessageDetail;
     private ChatRecentAdapter view_chatrecentAdapter;
+    private ArrayList<Chat_recent_model.UserDetail> userDetailArray;
+    private ArrayList<Chat_recent_model.MessageDetail> messageDetailArray;
+    private ArrayList<Chat_recent_model> arrayChatHistoryResult;
 
+
+    private int index = 0;
 
 
     String uid = PreferenceUtils.getSinglePrefrence(getActivity(), PreferenceUtils.PREFERENCE_USER_ID);
@@ -58,11 +63,15 @@ public class FragmentChat extends Fragment {
         super.onCreate(savedInstanceState);
         recentChatTarget = new ArrayList<>();
         recentChat = new ArrayList<>();
-        chatList = new ArrayList<>();
-        result_recentChat = new ArrayList<>();
+        arrayChatHistoryResult = new ArrayList<>();
+        userDetailArray = new ArrayList<>();
+        messageDetailArray = new ArrayList<>();
+
+        recentChatView_modelUserDetail = new Chat_recent_model.UserDetail();
+        recentChatView_modelMessageDetail = new Chat_recent_model.MessageDetail();
 
         view_chatrecentAdapter = new ChatRecentAdapter(getActivity(), R.layout.message_item_history,
-                result_recentChat);
+                arrayChatHistoryResult);
 
         firebaseDatabase = WaChat.getmFirebaseDatabase();
         firebaseDatabase.getReference()
@@ -74,8 +83,8 @@ public class FragmentChat extends Fragment {
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
                         //loop throught the target uid, and path to message per target uid
-                        int index = 0;
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        index = 0;
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             recentChatTarget.add(index, snapshot.getKey());
                             Log.d(TAG, "KEY TARGET----------> " + recentChatTarget.get(index));
 
@@ -89,13 +98,15 @@ public class FragmentChat extends Fragment {
                             index++;
                         }
 
-                        recentChatView_model = new Chat_recent_model();
 
                         //loop throught Message Child
+                        index = 0;
                         for (int i = 0; i < recentChatTarget.size(); i++) {
                             Log.d(TAG, "result recent target ----> " + recentChatTarget.get(i));
                             Log.d(TAG, "result recent chat ----> " + recentChat.get(i));
                             chat = new Chat_model();
+
+                            Log.d(TAG, "INDEX ----> " + index);
 
                             firebaseDatabase.getReference()
                                     .child(WaChat.STRUCKTUR_VERSION)
@@ -110,9 +121,16 @@ public class FragmentChat extends Fragment {
                                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                                 chat = snapshot.getValue(Chat_model.class);
 
+                                                recentChatView_modelMessageDetail.setMessage(chat.getMessage());
+                                                recentChatView_modelMessageDetail.setTime_stamp(chat.getTime_stamp());
+
+                                                Log.d(TAG, "onDataChange: Message--->" + recentChatView_modelMessageDetail.getMessage());
+
+                                                messageDetailArray.add(recentChatView_modelMessageDetail);
                                             }
-                                            //last CHATr
-                                            Log.d(TAG, "LAST CHAT " + chat.getMessage());
+
+
+
 
                                         }
 
@@ -121,12 +139,13 @@ public class FragmentChat extends Fragment {
 
                                         }
                                     });
+                            index++;
 
                         }
 
                         for (int i = 0; i < recentChatTarget.size(); i++) {
                             // loop for get user Detail
-                            Log.d(TAG, "onDataChange: 1" + recentChatTarget.get(i));
+                            Log.d(TAG, "UID TARGET ------->" + i + " " + recentChatTarget.get(i));
                             userContact = new UserContact();
 
                             firebaseDatabase.getReference()
@@ -137,9 +156,30 @@ public class FragmentChat extends Fragment {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             userContact = dataSnapshot.getValue(UserContact.class);
-                                            Log.d(TAG, "USER NAME ------->" + userContact.getName());
-                                            
+
+                                            recentChatView_modelUserDetail.setName(userContact.getName());
+                                            recentChatView_modelUserDetail.setLastSeen(userContact.getLastSeen());
+
+                                            userDetailArray.add(recentChatView_modelUserDetail);
+
+                                            if (userDetailArray.size() != messageDetailArray.size()){
+                                                Toast.makeText(getActivity(), "size message and user is different", Toast.LENGTH_SHORT).show();
+                                            }else {
+                                                for (int j = 0; j < recentChatTarget.size(); j++) {
+                                                    Chat_recent_model chat = new Chat_recent_model();
+                                                    chat.setName(userDetailArray.get(j).getName());
+                                                    chat.setLastSeen(userDetailArray.get(j).getLastSeen());
+                                                    chat.setMessage(messageDetailArray.get(j).getMessage());
+                                                    chat.setTime_stamp(messageDetailArray.get(j).getTime_stamp());
+
+                                                    Log.d(TAG, "onDataChange: --->" + chat.getMessage());
+                                                    arrayChatHistoryResult.add(chat);
+                                                }
+                                            }
+
+                                            view_chatrecentAdapter.notifyDataSetChanged();
                                         }
+
 
                                         @Override
                                         public void onCancelled(DatabaseError databaseError) {
@@ -147,10 +187,18 @@ public class FragmentChat extends Fragment {
                                         }
                                     });
 
+                            view_chatrecentAdapter.notifyDataSetChanged();
+
+
                         }
 
+/*
+                        boolean chatlistNULL = chatList.size() < 1;
+                        Log.d(TAG, "CHAT LIST IS NULL? ======= " + chatlistNULL);
+
                         view_chatrecentAdapter.notifyDataSetChanged();
-                        Log.d(TAG, "RESULT ON CREATE " + result_recentChat.size());
+                        Log.d(TAG, "RESULT ON CREATE " + result_recentChat.size());*/
+
                     }
 
                     @Override
@@ -169,29 +217,27 @@ public class FragmentChat extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_listview, container, false);
         ListView mListChat = (ListView) rootView.findViewById(R.id.list_user);
 
-        Log.d(TAG, "RESULT CHAT " + result_recentChat.size());
-
         mListChat.setAdapter(view_chatrecentAdapter);
 
         return rootView;
     }
 
-    private String getUserNameById (String userId){
-            firebaseDatabase.getReference()
-                    .child(WaChat.STRUCKTUR_VERSION)
-                    .child(Constant.KEY_USER)
-                    .child(userId)
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            userContact = dataSnapshot.getValue(UserContact.class);
-                        }
+    private String getUserNameById(String userId) {
+        firebaseDatabase.getReference()
+                .child(WaChat.STRUCKTUR_VERSION)
+                .child(Constant.KEY_USER)
+                .child(userId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        userContact = dataSnapshot.getValue(UserContact.class);
+                    }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-                        }
-                    });
+                    }
+                });
 
 
         return userContact.getName();
